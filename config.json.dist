@@ -1,4 +1,5 @@
 {
+  "MainLoopInterval": 60,
   "ChatId": "",
   "BotId": "",
   "Token": ""

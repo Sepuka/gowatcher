@@ -75,17 +75,23 @@ func readConfig()  {
 	}
 }
 
-func printer(channel <-chan watchers.WatcherResult)  {
-	result := <- channel
-	if result.IsFailure() {
-		log.Printf("disk free error: %v", result.GetError())
-		os.Exit(1)
+func printer(channel chan watchers.WatcherResult)  {
+	for {
+		select {
+			case result := <-channel:
+				if result.IsFailure() {
+					log.Printf("disk free error: %v", result.GetError())
+					os.Exit(1)
+				}
+				d := map[string]string{"chat_id": config.ChatId, "text": result.GetText()}
+				out := new(bytes.Buffer)
+				json.NewEncoder(out).Encode(d)
+				url := fmt.Sprintf("https://api.telegram.org/%v:%v/sendMessage", config.BotId, config.Token)
+				http.Post(url, "application/json", out)
+			case <-time.After(time.Second * config.MainLoopInterval):
+				go watchers.Work(channel)
+		}
 	}
-	d := map[string]string{"chat_id": config.ChatId, "text": result.GetText()}
-	out := new(bytes.Buffer)
-	json.NewEncoder(out).Encode(d)
-	url := fmt.Sprintf("https://api.telegram.org/%v:%v/sendMessage", config.BotId, config.Token)
-	http.Post(url, "application/json", out)
 }
 
 func daemonLoop() {

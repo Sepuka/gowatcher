@@ -1,5 +1,7 @@
 package watchers
 
+import "time"
+
 type WatcherResult struct {
 	text  string
 	error error
@@ -17,8 +19,8 @@ func (r *WatcherResult) GetError() string {
 func (r *WatcherResult) IsFailure() bool {
 	return r.error != nil
 }
-
 type Configuration struct {
+	MainLoopInterval time.Duration
 	ChatId string
 	BotId string
 	Token string
