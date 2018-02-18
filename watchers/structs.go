@@ -3,9 +3,10 @@ package watchers
 import "time"
 
 type WatcherResult struct {
+	watcherName string
 	text  string
 	error error
-	raw string
+	raw string ""
 }
 
 func (r *WatcherResult) GetText() string {

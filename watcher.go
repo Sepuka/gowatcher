@@ -55,7 +55,9 @@ func main() {
 	log.Print("watcher daemon started")
 
 	var channel = make(chan watchers.WatcherResult)
-	go watchers.Work(channel)
+	go watchers.DiskFree(channel)
+	go watchers.Uptime(channel)
+	go watchers.Who(channel)
 	go printer(channel)
 
 	go daemonLoop()
@@ -89,7 +91,7 @@ func printer(channel chan watchers.WatcherResult)  {
 				url := fmt.Sprintf("https://api.telegram.org/%v:%v/sendMessage", config.BotId, config.Token)
 				http.Post(url, "application/json", out)
 			case <-time.After(time.Second * config.MainLoopInterval):
-				go watchers.Work(channel)
+				go watchers.DiskFree(channel)
 		}
 	}
 }

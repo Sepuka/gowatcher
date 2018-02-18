@@ -9,10 +9,11 @@ import (
 const diskFreeCommand = "df"
 const outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
 
-func Work(channel chan<- WatcherResult) {
+func DiskFree(channel chan<- WatcherResult) {
 	result, err := Run(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
 	if err != nil {
 		channel <- WatcherResult{
+			diskFreeCommand,
 			"",
 			err,
 			"",
@@ -20,6 +21,7 @@ func Work(channel chan<- WatcherResult) {
 	}
 
 	channel <- WatcherResult{
+		diskFreeCommand,
 		parse(result),
 		nil,
 		result,
