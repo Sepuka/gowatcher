@@ -1,0 +1,6 @@
+language: go
+go:
+  - master
+install:
+  - go get github.com/sevlyar/go-daemon
+  - go get github.com/tkanos/gonfig
