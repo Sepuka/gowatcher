@@ -8,14 +8,15 @@ import (
 	"flag"
 	"syscall"
 	"time"
-	"net/http"
 	"encoding/json"
 	"bytes"
 	"github.com/tkanos/gonfig"
-	"fmt"
 )
 
-const configPath = "./config.json"
+const (
+	configPath = "./config.json"
+	daemonName = "gowatcher"
+)
 
 var (
 	signal = flag.String("s", "", `send signal to the daemon
@@ -29,7 +30,19 @@ var config = watchers.Configuration{}
 
 func main() {
 	readConfig()
+
+	daemonize := flag.Bool("d", false, "Daemonize gowatcher")
 	flag.Parse()
+
+	var channel = make(chan watchers.WatcherResult)
+
+	if !daemon.WasReborn() && !*daemonize {
+		work(channel)
+		time.Sleep(time.Second*3)
+
+		return
+	}
+
 	daemon.AddCommand(daemon.StringFlag(signal, "quit"), syscall.SIGQUIT, termHandler)
 	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
 
@@ -40,9 +53,8 @@ func main() {
 		LogFilePerm: 0640,
 		WorkDir:     "./",
 		Umask:       027,
-		Args:        []string{"[go-daemon sample]"},
+		Args:        []string{daemonName},
 	}
-
 	d, err := cntxt.Reborn()
 	if err != nil {
 		log.Fatal("Unable to run: ", err)
@@ -50,15 +62,12 @@ func main() {
 	if d != nil {
 		return
 	}
+
 	defer cntxt.Release()
 
 	log.Print("watcher daemon started")
 
-	var channel = make(chan watchers.WatcherResult)
-	go watchers.DiskFree(channel)
-	go watchers.Uptime(channel)
-	go watchers.Who(channel)
-	go printer(channel)
+	work(channel)
 
 	go daemonLoop()
 
@@ -77,6 +86,13 @@ func readConfig()  {
 	}
 }
 
+func work(channel chan watchers.WatcherResult)  {
+	go watchers.DiskFree(channel)
+	go watchers.Uptime(channel)
+	go watchers.Who(channel)
+	go printer(channel)
+}
+
 func printer(channel chan watchers.WatcherResult)  {
 	for {
 		select {
@@ -88,10 +104,11 @@ func printer(channel chan watchers.WatcherResult)  {
 				d := map[string]string{"chat_id": config.ChatId, "text": result.GetText()}
 				out := new(bytes.Buffer)
 				json.NewEncoder(out).Encode(d)
-				url := fmt.Sprintf("https://api.telegram.org/%v:%v/sendMessage", config.BotId, config.Token)
-				http.Post(url, "application/json", out)
+				watchers.SendMessage(out, config)
 			case <-time.After(time.Second * config.MainLoopInterval):
 				go watchers.DiskFree(channel)
+				go watchers.Uptime(channel)
+				go watchers.Who(channel)
 		}
 	}
 }
