@@ -8,8 +8,6 @@ import (
 	"flag"
 	"syscall"
 	"time"
-	"encoding/json"
-	"bytes"
 	"github.com/tkanos/gonfig"
 )
 
@@ -98,13 +96,10 @@ func printer(channel chan watchers.WatcherResult)  {
 		select {
 			case result := <-channel:
 				if result.IsFailure() {
-					log.Printf("disk free error: %v", result.GetError())
+					log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
 					os.Exit(1)
 				}
-				d := map[string]string{"chat_id": config.ChatId, "text": result.GetText()}
-				out := new(bytes.Buffer)
-				json.NewEncoder(out).Encode(d)
-				watchers.SendMessage(out, config)
+				watchers.SendMessage(result, config)
 			case <-time.After(time.Second * config.MainLoopInterval):
 				go watchers.DiskFree(channel)
 				go watchers.Uptime(channel)

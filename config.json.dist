@@ -2,5 +2,11 @@
   "MainLoopInterval": 60,
   "ChatId": "",
   "BotId": "",
-  "Token": ""
+  "Token": "",
+   "Transport": {
+     "Api": "https://api.telegram.org",
+     "Format": "application/json",
+     "SilentNotify": true,
+     "TextMode": "HTML"
+   }
 }
