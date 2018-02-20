@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io"
 	"github.com/gravitational/log"
+	"os"
 )
 
 const (
@@ -45,12 +46,36 @@ func buildRequest(data WatcherResult, config Configuration) io.Reader {
 }
 
 func formatText(data WatcherResult, config Configuration) string {
+	host := getCurrentHost()
+
 	switch config.Transport.TextMode {
 		case textModeHTML:
-			return fmt.Sprintf("watcher <b>%v</b> says:<br> <strong>%s</strong>", data.watcherName, data.GetText())
+			return fmt.Sprintf(
+				"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
+					host,
+					data.watcherName,
+					data.GetText())
 		case textModeMarkdown:
-			return fmt.Sprintf("watcher *%v* says:\n ```%s```", data.watcherName, data.GetText())
+			return fmt.Sprintf(
+				"%v *%v* says:\n ```%s```",
+				host,
+				data.watcherName,
+				data.GetText())
 		default:
-			return fmt.Sprintf("watcher %v says: %s", data.watcherName, data.GetText())
+			return fmt.Sprintf(
+				"%v %v says: %s",
+				host,
+				data.watcherName,
+				data.GetText())
 	}
+}
+
+func getCurrentHost() string {
+	host, err := os.Hostname()
+	if err != nil {
+		log.Warningf("Cannot detect current host: %v", err)
+		host = "unknown host"
+	}
+
+	return host
 }
