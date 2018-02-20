@@ -22,17 +22,25 @@ var (
 		stop — fast shutdown`)
 	stop = make(chan struct{})
 	done = make(chan struct{})
+	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
+	testMode = flag.Bool("t", false, "Test mode")
 )
 
 var config = watchers.Configuration{}
 
 func main() {
 	readConfig()
-
-	daemonize := flag.Bool("d", false, "Daemonize gowatcher")
 	flag.Parse()
 
 	var channel = make(chan watchers.WatcherResult)
+
+	if *testMode {
+		go watchers.Test(channel)
+		go printer(channel)
+		time.Sleep(time.Second*3)
+
+		return
+	}
 
 	if !daemon.WasReborn() && !*daemonize {
 		work(channel)
