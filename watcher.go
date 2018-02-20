@@ -24,6 +24,7 @@ var (
 	done = make(chan struct{})
 	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode = flag.Bool("t", false, "Test mode")
+	channel = make(chan watchers.WatcherResult)
 )
 
 var config = watchers.Configuration{}
@@ -31,12 +32,10 @@ var config = watchers.Configuration{}
 func main() {
 	readConfig()
 	flag.Parse()
-
-	var channel = make(chan watchers.WatcherResult)
+	go printer(channel)
 
 	if *testMode {
 		go watchers.Test(channel)
-		go printer(channel)
 		time.Sleep(time.Second*3)
 
 		return
@@ -96,7 +95,6 @@ func work(channel chan watchers.WatcherResult)  {
 	go watchers.DiskFree(channel)
 	go watchers.Uptime(channel)
 	go watchers.Who(channel)
-	go printer(channel)
 }
 
 func printer(channel chan watchers.WatcherResult)  {
