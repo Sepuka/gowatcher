@@ -26,6 +26,15 @@ var (
 	testMode = flag.Bool("t", false, "Test mode")
 	channel = make(chan watchers.WatcherResult)
 	config = watchers.Configuration{}
+	cntxt = &daemon.Context{
+		PidFileName: "pid",
+		PidFilePerm: 0644,
+		LogFileName: "log",
+		LogFilePerm: 0640,
+		WorkDir:     "./",
+		Umask:       027,
+		Args:        []string{daemonName},
+	}
 )
 
 func main() {
@@ -42,6 +51,16 @@ func main() {
 		return
 	}
 
+	if isDaemonFlagsPresent() {
+		d, err := cntxt.Search()
+		if err != nil {
+			log.Fatalf("Unable send signal to the daemon: ", err)
+		}
+		daemon.SendCommands(d)
+
+		return
+	}
+
 	if !daemon.WasReborn() && !*daemonize {
 		work(channel)
 		time.Sleep(time.Second*3)
@@ -49,15 +68,6 @@ func main() {
 		return
 	}
 
-	cntxt := &daemon.Context{
-		PidFileName: "pid",
-		PidFilePerm: 0644,
-		LogFileName: "log",
-		LogFilePerm: 0640,
-		WorkDir:     "./",
-		Umask:       027,
-		Args:        []string{daemonName},
-	}
 	child, err := cntxt.Reborn()
 	if err != nil {
 		log.Fatal("Unable to run: ", err)
@@ -67,7 +77,6 @@ func main() {
 	} else {
 		defer cntxt.Release()
 	}
-
 
 	log.Print("watcher daemon started")
 
@@ -88,6 +97,10 @@ func readConfig()  {
 		log.Printf("Cannot read config: %v", err)
 		os.Exit(1)
 	}
+}
+
+func isDaemonFlagsPresent() bool {
+	return len(daemon.ActiveFlags()) > 0
 }
 
 func work(channel chan watchers.WatcherResult) {
