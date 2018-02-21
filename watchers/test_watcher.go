@@ -1,9 +1,11 @@
 package watchers
 
-func Test(channel chan<- WatcherResult) {
-	channel <- WatcherResult{
+const msg = "It's work"
+
+func Test() WatcherResult {
+	return WatcherResult{
 		"test",
-		"It's work",
+		msg,
 		nil,
 		"",
 	}
