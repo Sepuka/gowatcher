@@ -31,6 +31,9 @@ var (
 func main() {
 	readConfig()
 	flag.Parse()
+	daemon.AddCommand(daemon.StringFlag(signal, "quit"), syscall.SIGQUIT, termHandler)
+	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
+
 	go watcherLoop(channel)
 
 	if *testMode {
@@ -46,9 +49,6 @@ func main() {
 		return
 	}
 
-	daemon.AddCommand(daemon.StringFlag(signal, "quit"), syscall.SIGQUIT, termHandler)
-	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
-
 	cntxt := &daemon.Context{
 		PidFileName: "pid",
 		PidFilePerm: 0644,
@@ -58,15 +58,16 @@ func main() {
 		Umask:       027,
 		Args:        []string{daemonName},
 	}
-	d, err := cntxt.Reborn()
+	child, err := cntxt.Reborn()
 	if err != nil {
 		log.Fatal("Unable to run: ", err)
 	}
-	if d != nil {
+	if child != nil {
 		return
+	} else {
+		defer cntxt.Release()
 	}
 
-	defer cntxt.Release()
 
 	log.Print("watcher daemon started")
 
@@ -126,5 +127,6 @@ func termHandler(sig os.Signal) error {
 	if sig == syscall.SIGQUIT {
 		<-done
 	}
+
 	return daemon.ErrStop
 }
