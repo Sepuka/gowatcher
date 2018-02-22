@@ -62,7 +62,8 @@ func main() {
 	}
 
 	if !daemon.WasReborn() && !*daemonize {
-		work(channel)
+		runWatchers(channel)
+		go watchers.W(config)
 		time.Sleep(time.Second*3)
 
 		return
@@ -80,7 +81,7 @@ func main() {
 
 	log.Print("watcher daemon started")
 
-	work(channel)
+	runWatchers(channel)
 
 	go daemonLoop()
 
@@ -103,7 +104,7 @@ func isDaemonFlagsPresent() bool {
 	return len(daemon.ActiveFlags()) > 0
 }
 
-func work(channel chan watchers.WatcherResult) {
+func runWatchers(channel chan watchers.WatcherResult) {
 	go watchers.DiskFree(channel)
 	go watchers.Uptime(channel)
 	go watchers.Who(channel)
@@ -119,7 +120,7 @@ func watcherLoop(channel chan watchers.WatcherResult) {
 				}
 				watchers.SendMessage(result, config)
 			case <-time.After(time.Second * config.MainLoopInterval):
-				work(channel)
+				runWatchers(channel)
 		}
 	}
 }

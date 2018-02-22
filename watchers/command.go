@@ -16,3 +16,23 @@ func Run(command string, arg...string) (string, error) {
 
 	return out.String(), nil
 }
+
+
+func RunCommand(command string) WatcherResult {
+	result, err := Run(command)
+	if err != nil {
+		return WatcherResult{
+			command,
+			"",
+			err,
+			"",
+		}
+	}
+
+	return WatcherResult{
+		command,
+		result,
+		nil,
+		result,
+	}
+}
