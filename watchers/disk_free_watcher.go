@@ -4,27 +4,29 @@ import (
 	"strings"
 	"fmt"
 	"regexp"
+	"time"
+	"log"
 )
 
 const diskFreeCommand = "df"
 const outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
 
-func DiskFree(channel chan<- WatcherResult) {
-	result, err := Run(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
-	if err != nil {
-		channel <- WatcherResult{
-			diskFreeCommand,
-			"",
-			err,
-			"",
-		}
-	}
+func DiskFree(config Configuration) {
+	result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
+	result.text = parse(result.raw)
+	SendMessage(result, config)
 
-	channel <- WatcherResult{
-		diskFreeCommand,
-		parse(result),
-		nil,
-		result,
+	for {
+		select {
+		case <-time.After(time.Second * config.MainLoopInterval):
+			result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
+			if result.IsFailure() {
+				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
+				break
+			}
+			result.text = parse(result.raw)
+			SendMessage(result, config)
+		}
 	}
 }
 

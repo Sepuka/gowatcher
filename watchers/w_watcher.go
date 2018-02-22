@@ -6,14 +6,17 @@ import (
 )
 
 const (
-	wCommand = "w"
-	loopInterval = time.Hour * 6
+	wCommand      = "w"
+	wLoopInterval = time.Hour * 6
 )
 
 func W(config Configuration) {
+	result := RunCommand(wCommand)
+	SendMessage(result, config)
+
 	for {
 		select {
-			case <-time.After(loopInterval):
+			case <-time.After(wLoopInterval):
 				result := RunCommand(wCommand)
 				if result.IsFailure() {
 					log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())

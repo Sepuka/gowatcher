@@ -1,22 +1,25 @@
 package watchers
 
+import (
+	"time"
+	"log"
+)
+
 const uptimeCommand = "uptime"
 
-func Uptime(channel chan<- WatcherResult) {
-	result, err := Run(uptimeCommand)
-	if err != nil {
-		channel <- WatcherResult{
-			uptimeCommand,
-			"",
-			err,
-			"",
-		}
-	}
+func Uptime(config Configuration) {
+	result := RunCommand(uptimeCommand)
+	SendMessage(result, config)
 
-	channel <- WatcherResult{
-		uptimeCommand,
-		result,
-		nil,
-		result,
+	for {
+		select {
+		case <-time.After(time.Second * config.MainLoopInterval):
+			result := RunCommand(uptimeCommand)
+			if result.IsFailure() {
+				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
+				break
+			}
+			SendMessage(result, config)
+		}
 	}
 }
