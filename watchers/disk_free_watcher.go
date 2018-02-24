@@ -4,6 +4,7 @@ import (
 	"strings"
 	"fmt"
 	"regexp"
+	"bytes"
 )
 
 const diskFreeCommand = "df"
@@ -29,7 +30,7 @@ func DiskFree(channel chan<- WatcherResult) {
 }
 
 func parse(data string) string {
-	var result []string
+	var buffer bytes.Buffer
 	rows := strings.Split(data, "\n")
 	for _, row := range rows[1:] {
 		reg := regexp.MustCompile(outputFormat)
@@ -42,9 +43,9 @@ func parse(data string) string {
 		avail := rowDetails[4]
 		percent := rowDetails[5]
 		mount := rowDetails[6]
-		format := fmt.Sprintf("%v have %v (%v) used, %v free, %v total size", mount, used, percent, avail, size)
-		result = append(result, format)
+		format := fmt.Sprintf("%v have %v (%v) used, %v free, %v total size\n", mount, used, percent, avail, size)
+		buffer.WriteString(format)
 	}
 
-	return strings.Join(result, "\n")
+	return buffer.String()
 }
