@@ -5,27 +5,32 @@ import (
 	"fmt"
 	"regexp"
 	"bytes"
+	"time"
+	"log"
 )
 
-const diskFreeCommand = "df"
-const outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
+const (
+	diskFreeCommand = "df"
+ 	outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
+	dfLoopInterval = time.Hour * 6
+)
 
-func DiskFree(channel chan<- WatcherResult) {
-	result, err := Run(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
-	if err != nil {
-		channel <- WatcherResult{
-			diskFreeCommand,
-			"",
-			err,
-			"",
+func DiskFree(config Configuration) {
+	result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
+	result.text = parse(result.raw)
+	SendMessage(result, config)
+
+	for {
+		select {
+		case <-time.After(dfLoopInterval):
+			result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
+			if result.IsFailure() {
+				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
+				break
+			}
+			result.text = parse(result.raw)
+			SendMessage(result, config)
 		}
-	}
-
-	channel <- WatcherResult{
-		diskFreeCommand,
-		parse(result),
-		nil,
-		result,
 	}
 }
 

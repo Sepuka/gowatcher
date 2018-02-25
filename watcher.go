@@ -24,7 +24,6 @@ var (
 	done = make(chan struct{})
 	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode = flag.Bool("t", false, "Test mode")
-	channel = make(chan watchers.WatcherResult)
 	config = watchers.Configuration{}
 	cntxt = &daemon.Context{
 		PidFileName: "pid",
@@ -43,8 +42,6 @@ func main() {
 	daemon.AddCommand(daemon.StringFlag(signal, "quit"), syscall.SIGQUIT, termHandler)
 	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
 
-	go watcherLoop(channel)
-
 	if *testMode {
 		watchers.SendMessage(watchers.Test(), config)
 
@@ -62,7 +59,7 @@ func main() {
 	}
 
 	if !daemon.WasReborn() && !*daemonize {
-		work(channel)
+		runWatchers()
 		time.Sleep(time.Second*3)
 
 		return
@@ -80,7 +77,7 @@ func main() {
 
 	log.Print("watcher daemon started")
 
-	work(channel)
+	runWatchers()
 
 	go daemonLoop()
 
@@ -103,25 +100,11 @@ func isDaemonFlagsPresent() bool {
 	return len(daemon.ActiveFlags()) > 0
 }
 
-func work(channel chan watchers.WatcherResult) {
-	go watchers.DiskFree(channel)
-	go watchers.Uptime(channel)
-	go watchers.Who(channel)
-}
-
-func watcherLoop(channel chan watchers.WatcherResult) {
-	for {
-		select {
-			case result := <-channel:
-				if result.IsFailure() {
-					log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
-					os.Exit(1)
-				}
-				watchers.SendMessage(result, config)
-			case <-time.After(time.Second * config.MainLoopInterval):
-				work(channel)
-		}
-	}
+func runWatchers() {
+	go watchers.DiskFree(config)
+	go watchers.Uptime(config)
+	go watchers.Who(config)
+	go watchers.W(config)
 }
 
 func daemonLoop() {
