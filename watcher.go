@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 	"github.com/tkanos/gonfig"
+	"fmt"
 )
 
 const (
@@ -43,7 +44,7 @@ func main() {
 	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
 
 	if *testMode {
-		watchers.SendMessage(watchers.Test(), config)
+		watchers.SendUrgentMessage(watchers.Test(), config)
 
 		return
 	}

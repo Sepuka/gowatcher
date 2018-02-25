@@ -25,6 +25,13 @@ func SendMessage(data WatcherResult, config Configuration) (resp *http.Response,
 	return http.Post(url, config.Transport.Format, body)
 }
 
+func SendUrgentMessage(data WatcherResult, config Configuration) (resp *http.Response, err error) {
+	urgent := config
+	urgent.Transport.SilentNotify=false
+
+	return SendMessage(data, urgent)
+}
+
 func buildRequest(data WatcherResult, config Configuration) io.Reader {
 	text := formatText(data, config)
 	d := map[string]string{
