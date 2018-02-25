@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 	"github.com/tkanos/gonfig"
-	"fmt"
 )
 
 const (
