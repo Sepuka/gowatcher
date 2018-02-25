@@ -5,7 +5,10 @@ import (
 	"log"
 )
 
-const whoCommand = "who"
+const (
+	whoCommand = "who"
+	whoLoopInterval = time.Hour * 3
+)
 
 func Who(config Configuration) {
 	result := RunCommand(whoCommand)
@@ -13,7 +16,7 @@ func Who(config Configuration) {
 
 	for {
 		select {
-		case <-time.After(time.Second * config.MainLoopInterval):
+		case <-time.After(whoLoopInterval):
 			result := RunCommand(whoCommand)
 			if result.IsFailure() {
 				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())

@@ -8,8 +8,11 @@ import (
 	"log"
 )
 
-const diskFreeCommand = "df"
-const outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
+const (
+	diskFreeCommand = "df"
+ 	outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
+	dfLoopInterval = time.Hour * 6
+)
 
 func DiskFree(config Configuration) {
 	result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
@@ -18,7 +21,7 @@ func DiskFree(config Configuration) {
 
 	for {
 		select {
-		case <-time.After(time.Second * config.MainLoopInterval):
+		case <-time.After(dfLoopInterval):
 			result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
 			if result.IsFailure() {
 				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())

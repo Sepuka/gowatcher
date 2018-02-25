@@ -5,7 +5,10 @@ import (
 	"log"
 )
 
-const uptimeCommand = "uptime"
+const (
+	uptimeCommand = "uptime"
+	uptimeLoopInterval = time.Hour * 24
+)
 
 func Uptime(config Configuration) {
 	result := RunCommand(uptimeCommand)
@@ -13,7 +16,7 @@ func Uptime(config Configuration) {
 
 	for {
 		select {
-		case <-time.After(time.Second * config.MainLoopInterval):
+		case <-time.After(uptimeLoopInterval):
 			result := RunCommand(uptimeCommand)
 			if result.IsFailure() {
 				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())

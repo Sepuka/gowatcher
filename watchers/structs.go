@@ -1,7 +1,6 @@
 package watchers
 
 import (
-	"time"
 	"strconv"
 )
 
@@ -40,7 +39,6 @@ func (r *Telegram) IsSilentNotify() string {
 }
 
 type Configuration struct {
-	MainLoopInterval time.Duration
 	ChatId string
 	BotId string
 	Token string
