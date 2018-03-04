@@ -1,7 +1,6 @@
 package main
 
 import (
-	"gowatcher/watchers"
 	"os"
 	"log"
 	"github.com/sevlyar/go-daemon"
@@ -9,6 +8,7 @@ import (
 	"syscall"
 	"time"
 	"github.com/tkanos/gonfig"
+	"github.com/sepuka/gowatcher/watchers"
 )
 
 const (
