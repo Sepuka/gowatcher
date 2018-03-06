@@ -9,4 +9,6 @@ RaspberryPi compilation command example `GOARCH=arm GOARM=7 go build -o watcher 
 		stop — fast shutdown
   -t
     	Test mode - print test phrase without run all modules
+  -version
+        Print version info
 ```
