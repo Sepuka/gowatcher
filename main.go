@@ -9,6 +9,7 @@ import (
 	"time"
 	"github.com/tkanos/gonfig"
 	"github.com/sepuka/gowatcher/watchers"
+	"fmt"
 )
 
 const (
@@ -17,6 +18,8 @@ const (
 )
 
 var (
+	buildstamp = "buildstamp not present"
+	githash = "githash not present"
 	signal = flag.String("s", "", `send signal to the daemon
 		quit — graceful shutdown
 		stop — fast shutdown`)
@@ -24,6 +27,7 @@ var (
 	done = make(chan struct{})
 	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode = flag.Bool("t", false, "Test mode")
+	version = flag.Bool("version", false, "Print version info")
 	config = watchers.Configuration{}
 	cntxt = &daemon.Context{
 		PidFileName: "pid",
@@ -44,6 +48,13 @@ func main() {
 
 	if *testMode {
 		watchers.SendUrgentMessage(watchers.Test(), config)
+
+		return
+	}
+
+	if *version {
+		fmt.Println("Build time: ", buildstamp)
+		fmt.Println("Git hash: ", githash)
 
 		return
 	}
