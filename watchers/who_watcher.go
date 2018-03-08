@@ -7,19 +7,19 @@ import (
 )
 
 const (
-	whoCommand = "who"
-	whoLoopInterval = time.Minute * 1
-	nosendCounterLimit = 59
+	whoCommand         = "who"
+	whoLoopInterval    = time.Minute * 1
+	silentCounterLimit = 59
 )
 
 var (
-	lastUsers = 0
-	nosendCounter = 0
+	lastUsers     = 0
+	silentCounter = 0
 )
 
 func Who(config Configuration) {
 	result := RunCommand(whoCommand)
-	lastUsers = parsers.Cnt(result.GetText())
+	lastUsers = parsers.GetLines(result.GetText())
 	SendMessage(result, config)
 
 	for {
@@ -37,13 +37,16 @@ func Who(config Configuration) {
 }
 
 func sendMessage(result WatcherResult, config Configuration) {
-	if parsers.Cnt(result.GetText()) > lastUsers {
+	users := parsers.GetLines(result.GetText())
+	if users > lastUsers {
 		SendUrgentMessage(result, config)
+		silentCounter = 0
 	} else {
-		if nosendCounter > nosendCounterLimit {
-			nosendCounter = 0
+		if silentCounter > silentCounterLimit {
+			silentCounter = 0
 			SendMessage(result, config)
 		}
 	}
-	nosendCounter++
+	lastUsers = users
+	silentCounter++
 }
