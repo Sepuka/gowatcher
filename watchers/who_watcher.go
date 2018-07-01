@@ -17,10 +17,10 @@ var (
 	silentCounter = 0
 )
 
-func Who(config Configuration) {
+func Who(c chan<- WatcherResult) {
 	result := RunCommand(whoCommand)
 	lastUsers = parsers.GetLines(result.GetText())
-	SendMessage(result, config)
+	sendMessage(result, c)
 
 	for {
 		select {
@@ -31,20 +31,20 @@ func Who(config Configuration) {
 				break
 			}
 
-			sendMessage(result, config)
+			sendMessage(result, c)
 		}
 	}
 }
 
-func sendMessage(result WatcherResult, config Configuration) {
+func sendMessage(result WatcherResult, c chan<- WatcherResult) {
 	users := parsers.GetLines(result.GetText())
 	if users > lastUsers {
-		SendUrgentMessage(result, config)
+		c <- result
 		silentCounter = 0
 	} else {
 		if silentCounter > silentCounterLimit {
 			silentCounter = 0
-			SendMessage(result, config)
+			c <- result
 		}
 	}
 	lastUsers = users

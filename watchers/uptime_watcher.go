@@ -10,9 +10,9 @@ const (
 	uptimeLoopInterval = time.Hour * 24
 )
 
-func Uptime(config Configuration) {
+func Uptime(c chan<- WatcherResult) {
 	result := RunCommand(uptimeCommand)
-	SendMessage(result, config)
+	c <- result
 
 	for {
 		select {
@@ -22,7 +22,7 @@ func Uptime(config Configuration) {
 				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
 				break
 			}
-			SendMessage(result, config)
+			c <- result
 		}
 	}
 }

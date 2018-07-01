@@ -25,6 +25,7 @@ var (
 		stop — fast shutdown`)
 	stop = make(chan struct{})
 	done = make(chan struct{})
+	watcherResult = make(chan watchers.WatcherResult)
 	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode = flag.Bool("t", false, "Test mode")
 	version = flag.Bool("version", false, "Print version info")
@@ -40,6 +41,10 @@ var (
 	}
 )
 
+func init()  {
+	go Transmitter(watcherResult)
+}
+
 func main() {
 	readConfig()
 	flag.Parse()
@@ -47,8 +52,8 @@ func main() {
 	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
 
 	if *testMode {
-		watchers.SendUrgentMessage(watchers.Test(), config)
-
+		watcherResult <- watchers.Test()
+		time.Sleep(time.Second*3)
 		return
 	}
 
@@ -71,8 +76,8 @@ func main() {
 
 	if !daemon.WasReborn() && !*daemonize {
 		runWatchers()
-		time.Sleep(time.Second*3)
-
+		log.Println("Press <Ctrl>+C to exit")
+		daemonLoop()
 		return
 	}
 
@@ -86,7 +91,7 @@ func main() {
 		defer cntxt.Release()
 	}
 
-	log.Print("watcher daemon started")
+	log.Println("watcher daemon started")
 
 	runWatchers()
 
@@ -112,10 +117,10 @@ func isDaemonFlagsPresent() bool {
 }
 
 func runWatchers() {
-	go watchers.DiskFree(config)
-	go watchers.Uptime(config)
-	go watchers.Who(config)
-	go watchers.W(config)
+	go watchers.DiskFree(watcherResult)
+	go watchers.Uptime(watcherResult)
+	go watchers.Who(watcherResult)
+	go watchers.W(watcherResult)
 }
 
 func daemonLoop() {

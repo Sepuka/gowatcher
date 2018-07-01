@@ -15,10 +15,10 @@ const (
 	dfLoopInterval = time.Hour * 6
 )
 
-func DiskFree(config Configuration) {
+func DiskFree(c chan<- WatcherResult) {
 	result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
 	result.text = parse(result.raw)
-	SendMessage(result, config)
+	c <- result
 
 	for {
 		select {
@@ -29,7 +29,7 @@ func DiskFree(config Configuration) {
 				break
 			}
 			result.text = parse(result.raw)
-			SendMessage(result, config)
+			c <- result
 		}
 	}
 }

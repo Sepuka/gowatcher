@@ -10,9 +10,9 @@ const (
 	wLoopInterval = time.Hour * 6
 )
 
-func W(config Configuration) {
+func W(c chan<- WatcherResult) {
 	result := RunCommand(wCommand)
-	SendMessage(result, config)
+	c <- result
 
 	for {
 		select {
@@ -22,7 +22,7 @@ func W(config Configuration) {
 					log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
 					break
 				}
-				SendMessage(result, config)
+				c <- result
 		}
 	}
 }
