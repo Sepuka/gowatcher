@@ -1,5 +1,6 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
+GORUN=$(GOCMD) run
 BUILD=`git rev-parse HEAD`
 TIMEBUILD=`date -u '+%Y-%m-%d_%I:%M:%S%p'`
 OUT_FILE=watcher
@@ -19,3 +20,6 @@ build_rpi: clean
 
 clean:
 	rm -f $(OUT_FILE)
+
+run:
+	$(GORUN) ./*.go

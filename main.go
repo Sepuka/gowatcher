@@ -104,7 +104,7 @@ func main() {
 	log.Println("daemon terminated.")
 }
 
-func readConfig()  {
+func readConfig() {
 	err := gonfig.GetConf(configPath, &config)
 	if err != nil {
 		log.Printf("Cannot read config: %v", err)
