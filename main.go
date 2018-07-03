@@ -7,7 +7,7 @@ import (
 	"flag"
 	"syscall"
 	"time"
-	"github.com/tkanos/gonfig"
+	"github.com/stevenroose/gonfig"
 	"github.com/sepuka/gowatcher/watchers"
 	"fmt"
 )
@@ -105,7 +105,10 @@ func main() {
 }
 
 func readConfig() {
-	err := gonfig.GetConf(configPath, &config)
+	err := gonfig.Load(&config, gonfig.Conf{
+		FileDefaultFilename: configPath,
+		FileDecoder: gonfig.DecoderJSON,
+	})
 	if err != nil {
 		log.Printf("Cannot read config: %v", err)
 		os.Exit(1)

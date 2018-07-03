@@ -1,6 +1,7 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GORUN=$(GOCMD) run
+GOGET=$(GOCMD) get
 BUILD=`git rev-parse HEAD`
 TIMEBUILD=`date -u '+%Y-%m-%d_%I:%M:%S%p'`
 OUT_FILE=watcher
@@ -21,8 +22,11 @@ build_rpi: clean
 clean:
 	rm -f $(OUT_FILE)
 
-run:
+get:
+	$(GOGET)
+
+run: get
 	$(GORUN) ./*.go
 
-run_test:
+run_test: get
 	$(GORUN) ./*.go -t

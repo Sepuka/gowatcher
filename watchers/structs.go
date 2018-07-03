@@ -28,10 +28,10 @@ func (r *WatcherResult) GetName() string {
 }
 
 type Telegram struct {
-	Api string
-	Format string
-	SilentNotify bool
-	TextMode string
+	Api string `id:"Api"`
+	Format string `id:"Format"`
+	SilentNotify bool `id:"SilentNotify" default:true`
+	TextMode string `id:"TextMode" default:"HTML"`
 }
 
 func (r *Telegram) IsSilentNotify() string {
@@ -39,8 +39,9 @@ func (r *Telegram) IsSilentNotify() string {
 }
 
 type Configuration struct {
-	ChatId string
-	BotId string
-	Token string
-	Transport Telegram
+	TestMode bool `id:"testmode" short:"t" default:false desc:"Test mode"`
+	ChatId string `id:"ChatId"`
+	BotId string `id:"BotId"`
+	Token string `id:"Token"`
+	Transport Telegram `id:"Transport"`
 }
