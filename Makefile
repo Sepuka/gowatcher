@@ -23,3 +23,6 @@ clean:
 
 run:
 	$(GORUN) ./*.go
+
+run_test:
+	$(GORUN) ./*.go -t
