@@ -1,6 +1,7 @@
 RaspberryPi compilation command example `GOARCH=arm GOARM=7 go build -o watcher watcher.go`
 
-#####Usage:
+Usage:
+=====
 ```bash
   -d	Daemonize gowatcher
   -s string
@@ -13,7 +14,8 @@ RaspberryPi compilation command example `GOARCH=arm GOARM=7 go build -o watcher 
         Print version info
 ```
 
-#####Makefile shortcuts:
+Makefile shortcuts:
+=====
 ```bash
     make run        run program (<Ctrl+C> to exit)
     make run_test   run program in test mode (print "It's work" phrase and shutdown)
