@@ -1,11 +1,18 @@
 {
-  "ChatId": "",
-  "BotId": "",
-  "Token": "",
-   "Transport": {
-     "Api": "https://api.telegram.org",
-     "Format": "application/json",
-     "SilentNotify": true,
-     "TextMode": "HTML"
-   }
+  "testmode": false,
+  "transports": {
+    "slack": {
+      "slackApiToken": "",
+      "slackChannel": "general"
+    },
+    "telegram": {
+      "api": "https://api.telegram.org",
+      "chatId": "",
+      "botId": "",
+      "token": "",
+      "format": "application/json",
+      "silentNotify": true,
+      "textMode": "HTML"
+    }
+  }
 }

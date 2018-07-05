@@ -17,45 +17,45 @@ const (
 	textModeMarkdown = "Markdown"
 )
 
-func SendMessage(data WatcherResult, config Configuration) (resp *http.Response, err error) {
-	telegramApi := config.Transport.Api
+func SendMessage(data WatcherResult, config TelegramConfig) (resp *http.Response, err error) {
+	telegramApi := config.Api
 	url := fmt.Sprintf(telegramPathTemplate, telegramApi, config.BotId, config.Token)
 	body := buildRequest(data, config)
 
-	return http.Post(url, config.Transport.Format, body)
+	return http.Post(url, config.Format, body)
 }
 
-func SendUrgentMessage(data WatcherResult, config Configuration) (resp *http.Response, err error) {
+func SendUrgentMessage(data WatcherResult, config TelegramConfig) (resp *http.Response, err error) {
 	urgent := config
-	urgent.Transport.SilentNotify=false
+	urgent.SilentNotify=false
 
 	return SendMessage(data, urgent)
 }
 
-func buildRequest(data WatcherResult, config Configuration) io.Reader {
+func buildRequest(data WatcherResult, config TelegramConfig) io.Reader {
 	text := formatText(data, config)
 	d := map[string]string{
 		"chat_id": config.ChatId,
 		"text": text,
-		"disable_notification": config.Transport.IsSilentNotify(),
-		"parse_mode": config.Transport.TextMode,
+		"disable_notification": config.IsSilentNotify(),
+		"parse_mode": config.TextMode,
 	}
 
-	switch config.Transport.Format {
+	switch config.Format {
 		case formatJson:
 			out := new(bytes.Buffer)
 			json.NewEncoder(out).Encode(d)
 			return out
 		default:
-			log.Errorf("Unknown telegram buildRequest %v!", config.Transport.Format)
+			log.Errorf("Unknown telegram buildRequest %v!", config.Format)
 			panic("Bad telegram buildRequest")
 	}
 }
 
-func formatText(data WatcherResult, config Configuration) string {
+func formatText(data WatcherResult, config TelegramConfig) string {
 	host := getCurrentHost()
 
-	switch config.Transport.TextMode {
+	switch config.TextMode {
 		case textModeHTML:
 			return fmt.Sprintf(
 				"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",

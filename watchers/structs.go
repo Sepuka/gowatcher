@@ -27,21 +27,26 @@ func (r *WatcherResult) GetName() string {
 	return r.watcherName
 }
 
-type Telegram struct {
-	Api string `id:"Api"`
-	Format string `id:"Format"`
-	SilentNotify bool `id:"SilentNotify" default:true`
-	TextMode string `id:"TextMode" default:"HTML"`
+type TelegramConfig struct {
+	Api string `id:"api"`
+	Format string `id:"format"`
+	SilentNotify bool `id:"silentNotify" default:true`
+	TextMode string `id:"textMode" default:"HTML"`
+	ChatId string `id:"chatId"`
+	BotId string `id:"botId"`
+	Token string `id:"token"`
 }
 
-func (r *Telegram) IsSilentNotify() string {
+func (r *TelegramConfig) IsSilentNotify() string {
 	return strconv.FormatBool(r.SilentNotify)
+}
+
+type TransportSlack struct {
+	SlackApiToken string `id:"slackApiToken"`
+	SlackChannel string `id:"slackChannel"`
 }
 
 type Configuration struct {
 	TestMode bool `id:"testmode" short:"t" default:false desc:"Test mode"`
-	ChatId string `id:"ChatId"`
-	BotId string `id:"BotId"`
-	Token string `id:"Token"`
-	Transport Telegram `id:"Transport"`
+	Transports map[string]interface{} `id:"transports"`
 }
