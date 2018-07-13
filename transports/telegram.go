@@ -1,4 +1,4 @@
-package watchers
+package transports
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"io"
 	"github.com/gravitational/log"
 	"os"
+	"github.com/sepuka/gowatcher/watchers"
 )
 
 const (
@@ -17,7 +18,7 @@ const (
 	textModeMarkdown = "Markdown"
 )
 
-func SendMessage(data WatcherResult, config TelegramConfig) (resp *http.Response, err error) {
+func SendMessage(data watchers.WatcherResult, config watchers.TelegramConfig) (resp *http.Response, err error) {
 	telegramApi := config.Api
 	url := fmt.Sprintf(telegramPathTemplate, telegramApi, config.BotId, config.Token)
 	body := buildRequest(data, config)
@@ -25,14 +26,14 @@ func SendMessage(data WatcherResult, config TelegramConfig) (resp *http.Response
 	return http.Post(url, config.Format, body)
 }
 
-func SendUrgentMessage(data WatcherResult, config TelegramConfig) (resp *http.Response, err error) {
+func SendUrgentMessage(data watchers.WatcherResult, config watchers.TelegramConfig) (resp *http.Response, err error) {
 	urgent := config
 	urgent.SilentNotify=false
 
 	return SendMessage(data, urgent)
 }
 
-func buildRequest(data WatcherResult, config TelegramConfig) io.Reader {
+func buildRequest(data watchers.WatcherResult, config watchers.TelegramConfig) io.Reader {
 	text := formatText(data, config)
 	d := map[string]string{
 		"chat_id": config.ChatId,
@@ -52,7 +53,7 @@ func buildRequest(data WatcherResult, config TelegramConfig) io.Reader {
 	}
 }
 
-func formatText(data WatcherResult, config TelegramConfig) string {
+func formatText(data watchers.WatcherResult, config watchers.TelegramConfig) string {
 	host := getCurrentHost()
 
 	switch config.TextMode {
@@ -60,19 +61,19 @@ func formatText(data WatcherResult, config TelegramConfig) string {
 			return fmt.Sprintf(
 				"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
 					host,
-					data.watcherName,
+					data.GetName(),
 					data.GetText())
 		case textModeMarkdown:
 			return fmt.Sprintf(
 				"%v *%v* says:\n ```%s```",
 				host,
-				data.watcherName,
+				data.GetName(),
 				data.GetText())
 		default:
 			return fmt.Sprintf(
 				"%v %v says: %s",
 				host,
-				data.watcherName,
+				data.GetName(),
 				data.GetText())
 	}
 }
