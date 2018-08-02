@@ -2,8 +2,7 @@
   "testmode": false,
   "transports": {
     "slack": {
-      "slackApiToken": "",
-      "slackChannel": "general"
+      "api": "https://hooks.slack.com/services/XXX/YYY/ZZZ"
     },
     "telegram": {
       "api": "https://api.telegram.org",

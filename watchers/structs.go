@@ -27,7 +27,7 @@ func (r *WatcherResult) GetName() string {
 	return r.watcherName
 }
 
-type TelegramConfig struct {
+type TransportTelegram struct {
 	Api string `id:"api"`
 	Format string `id:"format"`
 	SilentNotify bool `id:"silentNotify" default:true`
@@ -37,13 +37,12 @@ type TelegramConfig struct {
 	Token string `id:"token"`
 }
 
-func (r *TelegramConfig) IsSilentNotify() string {
+func (r *TransportTelegram) IsSilentNotify() string {
 	return strconv.FormatBool(r.SilentNotify)
 }
 
 type TransportSlack struct {
-	SlackApiToken string `id:"slackApiToken"`
-	SlackChannel string `id:"slackChannel"`
+	Api           string `id:"api" default:"https://slack.com/api"`
 }
 
 type Configuration struct {

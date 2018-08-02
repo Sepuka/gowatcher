@@ -18,7 +18,7 @@ const (
 	textModeMarkdown = "Markdown"
 )
 
-func SendMessage(data watchers.WatcherResult, config watchers.TelegramConfig) (resp *http.Response, err error) {
+func SendMessage(data watchers.WatcherResult, config watchers.TransportTelegram) (resp *http.Response, err error) {
 	telegramApi := config.Api
 	url := fmt.Sprintf(telegramPathTemplate, telegramApi, config.BotId, config.Token)
 	body := buildRequest(data, config)
@@ -26,14 +26,14 @@ func SendMessage(data watchers.WatcherResult, config watchers.TelegramConfig) (r
 	return http.Post(url, config.Format, body)
 }
 
-func SendUrgentMessage(data watchers.WatcherResult, config watchers.TelegramConfig) (resp *http.Response, err error) {
+func SendUrgentMessage(data watchers.WatcherResult, config watchers.TransportTelegram) (resp *http.Response, err error) {
 	urgent := config
 	urgent.SilentNotify=false
 
 	return SendMessage(data, urgent)
 }
 
-func buildRequest(data watchers.WatcherResult, config watchers.TelegramConfig) io.Reader {
+func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram) io.Reader {
 	text := formatText(data, config)
 	d := map[string]string{
 		"chat_id": config.ChatId,
@@ -53,7 +53,7 @@ func buildRequest(data watchers.WatcherResult, config watchers.TelegramConfig) i
 	}
 }
 
-func formatText(data watchers.WatcherResult, config watchers.TelegramConfig) string {
+func formatText(data watchers.WatcherResult, config watchers.TransportTelegram) string {
 	host := getCurrentHost()
 
 	switch config.TextMode {

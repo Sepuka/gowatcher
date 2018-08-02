@@ -48,7 +48,7 @@ func parse(data string) string {
 		avail := rowDetails[4]
 		percent := rowDetails[5]
 		mount := rowDetails[6]
-		format := fmt.Sprintf("%v have %v (%v) used, %v free, %v total size\n", mount, used, percent, avail, size)
+		format := fmt.Sprintf("%v has %v (%v) used, %v free, %v total size\n", mount, used, percent, avail, size)
 		buffer.WriteString(format)
 	}
 
