@@ -3,12 +3,11 @@ package transports
 import (
 	"fmt"
 	"net/http"
-	"bytes"
-	"encoding/json"
 	"io"
 	"github.com/gravitational/log"
 	"os"
 	"github.com/sepuka/gowatcher/watchers"
+	"github.com/sepuka/gowatcher/pack"
 )
 
 const (
@@ -35,7 +34,7 @@ func SendUrgentMessage(data watchers.WatcherResult, config watchers.TransportTel
 
 func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram) io.Reader {
 	text := formatText(data, config)
-	d := map[string]string{
+	d := map[string]interface{}{
 		"chat_id": config.ChatId,
 		"text": text,
 		"disable_notification": config.IsSilentNotify(),
@@ -44,9 +43,7 @@ func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram
 
 	switch config.Format {
 		case formatJson:
-			out := new(bytes.Buffer)
-			json.NewEncoder(out).Encode(d)
-			return out
+			return pack.Encode(d)
 		default:
 			log.Errorf("Unknown telegram buildRequest %v!", config.Format)
 			panic("Bad telegram buildRequest")
