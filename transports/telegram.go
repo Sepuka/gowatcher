@@ -17,7 +17,7 @@ const (
 	textModeMarkdown = "Markdown"
 )
 
-func SendMessage(data watchers.WatcherResult, config watchers.TransportTelegram) (resp *http.Response, err error) {
+func SendTelegramMessage(data watchers.WatcherResult, config watchers.TransportTelegram) (resp *http.Response, err error) {
 	telegramApi := config.Api
 	url := fmt.Sprintf(telegramPathTemplate, telegramApi, config.BotId, config.Token)
 	body := buildRequest(data, config)
@@ -29,7 +29,7 @@ func SendUrgentMessage(data watchers.WatcherResult, config watchers.TransportTel
 	urgent := config
 	urgent.SilentNotify=false
 
-	return SendMessage(data, urgent)
+	return SendTelegramMessage(data, urgent)
 }
 
 func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram) io.Reader {

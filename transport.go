@@ -23,9 +23,9 @@ func Transmitter(c <-chan watchers.WatcherResult) {
 }
 
 func sendToTelegram(msg watchers.WatcherResult, config watchers.TransportTelegram) {
-	transports.SendMessage(msg, config)
+	transports.SendTelegramMessage(msg, config)
 }
 
 func sendToSlack(msg watchers.WatcherResult, config watchers.TransportSlack) {
-	transports.SendMessage2(msg, config)
+	transports.SendSlackMessage(msg, config)
 }

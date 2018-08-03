@@ -6,7 +6,7 @@ import (
 	"github.com/sepuka/gowatcher/pack"
 )
 
-func SendMessage2(msg watchers.WatcherResult, config watchers.TransportSlack) {
+func SendSlackMessage(msg watchers.WatcherResult, config watchers.TransportSlack) {
 	d := map[string]interface{}{
 		"text": msg.GetText(),
 	}
