@@ -17,7 +17,7 @@ build_rpi: clean
 	GOARCH=arm GOARM=7 \
 	$(GOBUILD) \
 	-ldflags "-X main.buildstamp=$(TIMEBUILD) -X main.githash=$(BUILD)" \
-	-o $(OUT_FILE) main.go
+	-o $(OUT_FILE) ./*.go
 
 clean:
 	rm -f $(OUT_FILE)
