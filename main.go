@@ -41,12 +41,12 @@ var (
 	}
 )
 
-func init()  {
+func init() {
+	readConfig()
 	go Transmitter(watcherResult)
 }
 
 func main() {
-	readConfig()
 	flag.Parse()
 	daemon.AddCommand(daemon.StringFlag(signal, "quit"), syscall.SIGQUIT, termHandler)
 	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)

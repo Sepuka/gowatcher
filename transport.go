@@ -6,18 +6,24 @@ import (
 	"github.com/sepuka/gowatcher/transports"
 )
 
+var telegramConfig watchers.TransportTelegram
+var slackConfig watchers.TransportSlack
+
+func initConfig() {
+	tconf := config.Transports["telegram"].(map[string]interface{})
+	gonfig.LoadMap(&telegramConfig, tconf, gonfig.Conf{})
+
+	sconf := config.Transports["slack"].(map[string]interface{})
+	gonfig.LoadMap(&slackConfig, sconf, gonfig.Conf{})
+}
+
 func Transmitter(c <-chan watchers.WatcherResult) {
+	initConfig()
+
 	for {
 		msg := <- c
 
-		telegramConfig := watchers.TransportTelegram{}
-		tconf := config.Transports["telegram"].(map[string]interface{})
-		gonfig.LoadMap(&telegramConfig, tconf, gonfig.Conf{})
 		go sendToTelegram(msg, telegramConfig)
-
-		slackConfig := watchers.TransportSlack{}
-		sconf := config.Transports["slack"].(map[string]interface{})
-		gonfig.LoadMap(&slackConfig, sconf, gonfig.Conf{})
 		go sendToSlack(msg, slackConfig)
 	}
 }
