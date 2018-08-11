@@ -6,7 +6,7 @@ BUILD=`git rev-parse HEAD`
 TIMEBUILD=`date -u '+%Y-%m-%d_%I:%M:%S%p'`
 OUT_FILE=watcher
 
-all: build
+all: build run
 
 build: clean
 	$(GOBUILD) \

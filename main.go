@@ -20,12 +20,10 @@ const (
 var (
 	buildstamp = "buildstamp not present"
 	githash = "githash not present"
-	signal = flag.String("s", "", `send signal to the daemon
-		quit — graceful shutdown
-		stop — fast shutdown`)
 	stop = make(chan struct{})
 	done = make(chan struct{})
 	watcherResult = make(chan watchers.WatcherResult)
+	signal = flag.String("signal", "", `send signal to the daemon`)
 	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode = flag.Bool("t", false, "Test mode")
 	version = flag.Bool("version", false, "Print version info")
@@ -48,7 +46,6 @@ func init() {
 
 func main() {
 	flag.Parse()
-	daemon.AddCommand(daemon.StringFlag(signal, "quit"), syscall.SIGQUIT, termHandler)
 	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
 
 	if *testMode {
@@ -108,6 +105,7 @@ func readConfig() {
 	err := gonfig.Load(&config, gonfig.Conf{
 		FileDefaultFilename: configPath,
 		FileDecoder: gonfig.DecoderJSON,
+		FlagIgnoreUnknown: true,
 	})
 	if err != nil {
 		log.Printf("Cannot read config: %v", err)

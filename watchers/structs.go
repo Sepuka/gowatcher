@@ -46,6 +46,5 @@ type TransportSlack struct {
 }
 
 type Configuration struct {
-	TestMode bool `id:"testmode" short:"t" default:false desc:"Test mode"`
 	Transports map[string]interface{} `id:"transports"`
 }
