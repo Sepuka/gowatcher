@@ -23,7 +23,7 @@ var (
 	stop = make(chan struct{})
 	done = make(chan struct{})
 	watcherResult = make(chan watchers.WatcherResult)
-	signal = flag.String("signal", "", `send signal to the daemon`)
+	signal = flag.String("s", "", "send signal to the daemon\nstop - to stop daemon")
 	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode = flag.Bool("t", false, "Test mode")
 	version = flag.Bool("version", false, "Print version info")

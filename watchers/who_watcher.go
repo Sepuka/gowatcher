@@ -4,49 +4,54 @@ import (
 	"time"
 	"log"
 	"github.com/sepuka/gowatcher/parsers"
+	"fmt"
 )
 
 const (
 	whoCommand         = "who"
-	whoLoopInterval    = time.Minute * 1
-	silentCounterLimit = 59
+	whoLoopInterval    = time.Second * 2
 )
 
 var (
-	lastUsers     = 0
-	silentCounter = 0
+	users = []string{}
 )
 
 func Who(c chan<- WatcherResult) {
-	result := RunCommand(whoCommand)
-	lastUsers = parsers.GetLines(result.GetText())
-	sendMessage(result, c)
+	result := RunCommand(whoCommand, "-u")// with PID
+	notifyAboutNewUsers(result, c)
 
 	for {
 		select {
 		case <-time.After(whoLoopInterval):
-			result := RunCommand(whoCommand)
+			result := RunCommand(whoCommand, "-u")
 			if result.IsFailure() {
 				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
 				break
 			}
 
-			sendMessage(result, c)
+			notifyAboutNewUsers(result, c)
 		}
 	}
 }
 
-func sendMessage(result WatcherResult, c chan<- WatcherResult) {
-	users := parsers.GetLines(result.GetText())
-	if users > lastUsers {
-		c <- result
-		silentCounter = 0
-	} else {
-		if silentCounter > silentCounterLimit {
-			silentCounter = 0
-			c <- result
+func notifyAboutNewUsers(result WatcherResult, c chan<- WatcherResult) {
+	visitors := parsers.GetPerLines(result.GetText())
+	for _, userInfo := range visitors {
+		if !isUserRegistered(userInfo) {
+			userInfoText := fmt.Sprintln("New user detected:", userInfo)
+			c <- WatcherResult{watcherName: whoCommand, text: userInfoText}
 		}
 	}
-	lastUsers = users
-	silentCounter++
+
+	users = parsers.GetPerLines(result.GetText())
+}
+
+func isUserRegistered(userInfo string) bool {
+	for _, value := range users {
+		if value == userInfo {
+			return true
+		}
+	}
+
+	return false
 }

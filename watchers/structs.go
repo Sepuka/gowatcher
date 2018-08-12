@@ -6,7 +6,7 @@ import (
 
 type WatcherResult struct {
 	watcherName string
-	text  string
+	text string
 	error error
 	raw string ""
 }
