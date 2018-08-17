@@ -64,7 +64,7 @@ func main() {
 	if isDaemonFlagsPresent() {
 		d, err := cntxt.Search()
 		if err != nil {
-			log.Fatalf("Unable send signal to the daemon: ", err)
+			log.Fatalf("Unable send signal to the daemon: %v", err)
 		}
 		daemon.SendCommands(d)
 

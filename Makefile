@@ -30,3 +30,6 @@ run: get
 
 run_test: get
 	$(GORUN) ./*.go -t
+
+test:
+	$(GOCMD) test -v ./...

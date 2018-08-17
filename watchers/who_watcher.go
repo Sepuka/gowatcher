@@ -35,7 +35,7 @@ func Who(c chan<- WatcherResult) {
 }
 
 func notifyAboutNewUsers(result WatcherResult, c chan<- WatcherResult) {
-	visitors := parsers.GetPerLines(result.GetText())
+	visitors := parsers.SplitPerLines(result.GetText())
 	for _, userInfo := range visitors {
 		if !isUserRegistered(userInfo) {
 			userInfoText := fmt.Sprintln("New user detected:", userInfo)
@@ -43,7 +43,7 @@ func notifyAboutNewUsers(result WatcherResult, c chan<- WatcherResult) {
 		}
 	}
 
-	users = parsers.GetPerLines(result.GetText())
+	users = parsers.SplitPerLines(result.GetText())
 }
 
 func isUserRegistered(userInfo string) bool {
