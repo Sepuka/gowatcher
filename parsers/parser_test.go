@@ -2,7 +2,7 @@ package parsers
 
 import (
 	"testing"
-	"reflect"
+	"github.com/stretchr/testify/assert"
 )
 
 type perLineDataSet struct {
@@ -17,8 +17,6 @@ var perLinesDataProvider = []perLineDataSet{
 
 func TestGetPerLines(t *testing.T) {
 	for _, set := range perLinesDataProvider {
-		if !reflect.DeepEqual(set.expected, SplitPerLines(set.text)) {
-			t.Error("Case ", set.text, " failed")
-		}
+		assert.Equal(t, set.expected, SplitPerLines(set.text))
 	}
 }
