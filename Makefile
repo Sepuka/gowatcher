@@ -33,3 +33,6 @@ run_test: get
 
 test:
 	$(GOCMD) test -v ./...
+
+format:
+	$(GOCMD) fmt

@@ -6,9 +6,9 @@ import (
 
 type WatcherResult struct {
 	watcherName string
-	text string
-	error error
-	raw string ""
+	text        string
+	error       error
+	raw         string ""
 }
 
 func (r *WatcherResult) GetText() string {
@@ -27,14 +27,16 @@ func (r *WatcherResult) GetName() string {
 	return r.watcherName
 }
 
+type FormatMode string
+
 type TransportTelegram struct {
-	Api string `id:"api"`
-	Format string `id:"format"`
-	SilentNotify bool `id:"silentNotify" default:true`
-	TextMode string `id:"textMode" default:"HTML"`
-	ChatId string `id:"chatId"`
-	BotId string `id:"botId"`
-	Token string `id:"token"`
+	Api          string `id:"api"`
+	Format       string `id:"format"`
+	SilentNotify bool   `id:"silentNotify" default:true`
+	TextMode     FormatMode `id:"textMode" default:"HTML"`
+	ChatId       string `id:"chatId"`
+	BotId        string `id:"botId"`
+	Token        string `id:"token"`
 }
 
 func (r *TransportTelegram) IsSilentNotify() string {
@@ -42,7 +44,8 @@ func (r *TransportTelegram) IsSilentNotify() string {
 }
 
 type TransportSlack struct {
-	Api           string `id:"api" default:"https://slack.com/api"`
+	Api      string `id:"api" default:"https://slack.com/api"`
+	TextMode FormatMode `id:"textMode" default:"HTML"`
 }
 
 type Configuration struct {

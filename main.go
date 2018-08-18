@@ -1,15 +1,15 @@
 package main
 
 import (
-	"os"
-	"log"
-	"github.com/sevlyar/go-daemon"
 	"flag"
+	"fmt"
+	"github.com/sepuka/gowatcher/watchers"
+	"github.com/sevlyar/go-daemon"
+	"github.com/stevenroose/gonfig"
+	"log"
+	"os"
 	"syscall"
 	"time"
-	"github.com/stevenroose/gonfig"
-	"github.com/sepuka/gowatcher/watchers"
-	"fmt"
 )
 
 const (
@@ -18,17 +18,17 @@ const (
 )
 
 var (
-	buildstamp = "buildstamp not present"
-	githash = "githash not present"
-	stop = make(chan struct{})
-	done = make(chan struct{})
+	buildstamp    = "buildstamp not present"
+	githash       = "githash not present"
+	stop          = make(chan struct{})
+	done          = make(chan struct{})
 	watcherResult = make(chan watchers.WatcherResult)
-	signal = flag.String("s", "", "send signal to the daemon\nstop - to stop daemon")
-	daemonize = flag.Bool("d", false, "Daemonize gowatcher")
-	testMode = flag.Bool("t", false, "Test mode")
-	version = flag.Bool("version", false, "Print version info")
-	config = watchers.Configuration{}
-	cntxt = &daemon.Context{
+	signal        = flag.String("s", "", "send signal to the daemon\nstop - to stop daemon")
+	daemonize     = flag.Bool("d", false, "Daemonize gowatcher")
+	testMode      = flag.Bool("t", false, "Test mode")
+	version       = flag.Bool("version", false, "Print version info")
+	config        = watchers.Configuration{}
+	cntxt         = &daemon.Context{
 		PidFileName: "pid",
 		PidFilePerm: 0644,
 		LogFileName: "log",
@@ -50,7 +50,7 @@ func main() {
 
 	if *testMode {
 		watcherResult <- watchers.Test()
-		time.Sleep(time.Second*3)
+		time.Sleep(time.Second * 3)
 		return
 	}
 
@@ -104,8 +104,8 @@ func main() {
 func readConfig() {
 	err := gonfig.Load(&config, gonfig.Conf{
 		FileDefaultFilename: configPath,
-		FileDecoder: gonfig.DecoderJSON,
-		FlagIgnoreUnknown: true,
+		FileDecoder:         gonfig.DecoderJSON,
+		FlagIgnoreUnknown:   true,
 	})
 	if err != nil {
 		log.Printf("Cannot read config: %v", err)

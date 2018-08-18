@@ -2,7 +2,8 @@
   "testmode": false,
   "transports": {
     "slack": {
-      "api": "https://hooks.slack.com/services/XXX/YYY/ZZZ"
+      "api": "https://hooks.slack.com/services/XXX/YYY/ZZZ",
+      "textMode": "Raw"
     },
     "telegram": {
       "api": "https://api.telegram.org",

@@ -7,14 +7,11 @@ import (
 	"github.com/gravitational/log"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sepuka/gowatcher/pack"
-	"github.com/sepuka/gowatcher/env"
 )
 
 const (
 	telegramPathTemplate = "%v/%v:%v/sendMessage"
 	formatJson = "application/json"
-	textModeHTML = "HTML"
-	textModeMarkdown = "Markdown"
 )
 
 func SendTelegramMessage(data watchers.WatcherResult, config watchers.TransportTelegram) (resp *http.Response, err error) {
@@ -33,7 +30,7 @@ func SendUrgentMessage(data watchers.WatcherResult, config watchers.TransportTel
 }
 
 func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram) io.Reader {
-	text := formatText(data, config)
+	text := pack.FormatText(data, config.TextMode)
 	d := map[string]interface{}{
 		"chat_id": config.ChatId,
 		"text": text,
@@ -47,30 +44,5 @@ func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram
 		default:
 			log.Errorf("Unknown telegram buildRequest %v!", config.Format)
 			panic("Bad telegram buildRequest")
-	}
-}
-
-func formatText(data watchers.WatcherResult, config watchers.TransportTelegram) string {
-	host := env.GetCurrentHost()
-
-	switch config.TextMode {
-		case textModeHTML:
-			return fmt.Sprintf(
-				"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
-					host,
-					data.GetName(),
-					data.GetText())
-		case textModeMarkdown:
-			return fmt.Sprintf(
-				"%v *%v* says:\n ```%s```",
-				host,
-				data.GetName(),
-				data.GetText())
-		default:
-			return fmt.Sprintf(
-				"%v %v says: %s",
-				host,
-				data.GetName(),
-				data.GetText())
 	}
 }

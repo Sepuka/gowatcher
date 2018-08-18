@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/sepuka/gowatcher/transports"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/stevenroose/gonfig"
-	"github.com/sepuka/gowatcher/transports"
 )
 
 var telegramConfig watchers.TransportTelegram
@@ -21,7 +21,7 @@ func Transmitter(c <-chan watchers.WatcherResult) {
 	initConfig()
 
 	for {
-		msg := <- c
+		msg := <-c
 
 		go sendToTelegram(msg, telegramConfig)
 		go sendToSlack(msg, slackConfig)
