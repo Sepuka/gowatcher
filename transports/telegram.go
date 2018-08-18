@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"io"
 	"github.com/gravitational/log"
-	"os"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sepuka/gowatcher/pack"
+	"github.com/sepuka/gowatcher/env"
 )
 
 const (
@@ -51,7 +51,7 @@ func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram
 }
 
 func formatText(data watchers.WatcherResult, config watchers.TransportTelegram) string {
-	host := getCurrentHost()
+	host := env.GetCurrentHost()
 
 	switch config.TextMode {
 		case textModeHTML:
@@ -73,14 +73,4 @@ func formatText(data watchers.WatcherResult, config watchers.TransportTelegram) 
 				data.GetName(),
 				data.GetText())
 	}
-}
-
-func getCurrentHost() string {
-	host, err := os.Hostname()
-	if err != nil {
-		log.Warningf("Cannot detect current host: %v", err)
-		host = "unknown host"
-	}
-
-	return host
 }
