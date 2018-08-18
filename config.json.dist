@@ -3,7 +3,8 @@
   "transports": {
     "slack": {
       "api": "https://hooks.slack.com/services/XXX/YYY/ZZZ",
-      "textMode": "Raw"
+      // are supported values: Raw, HTML, Markdown, Slack
+      "textMode": "slack"
     },
     "telegram": {
       "api": "https://api.telegram.org",

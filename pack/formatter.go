@@ -6,39 +6,35 @@ import (
 	"fmt"
 )
 
-const (
-	textModeHTML     = "HTML"
-	textModeMarkdown = "Markdown"
-	textModeRaw      = "Raw"
-)
-
 func FormatText(data watchers.WatcherResult, mode watchers.FormatMode) string {
 	host := env.GetCurrentHost()
 
 	switch mode {
-	case textModeHTML:
+	case watchers.TextModeHTML:
 		return fmt.Sprintf(
 			"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
 			host,
 			data.GetName(),
 			data.GetText())
-	case textModeMarkdown:
+	case watchers.TextModeSlack:
+		return fmt.Sprintf(
+			"*%v* *%v* says: ```%s```",
+			host,
+			data.GetName(),
+			data.GetText())
+	case watchers.TextModeMarkdown:
 		return fmt.Sprintf(
 			"%v *%v* says:\n ```%s```",
 			host,
 			data.GetName(),
 			data.GetText())
-	case textModeRaw:
+	case watchers.TextModeRaw:
 		return fmt.Sprintf(
 			"%v %v says: %s",
 			host,
 			data.GetName(),
 			data.GetText())
 	default:
-		return fmt.Sprintf(
-			"%v %v says: %s",
-			host,
-			data.GetName(),
-			data.GetText())
+		panic("Unknown format " + mode)
 	}
 }
