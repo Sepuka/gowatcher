@@ -1,9 +1,9 @@
 package transports
 
 import (
+	"github.com/sepuka/gowatcher/pack"
 	"github.com/sepuka/gowatcher/watchers"
 	"net/http"
-	"github.com/sepuka/gowatcher/pack"
 )
 
 func SendSlackMessage(msg watchers.WatcherResult, config watchers.TransportSlack) {
@@ -16,4 +16,3 @@ func SendSlackMessage(msg watchers.WatcherResult, config watchers.TransportSlack
 	resp, _ := client.Do(req)
 	defer resp.Body.Close()
 }
-

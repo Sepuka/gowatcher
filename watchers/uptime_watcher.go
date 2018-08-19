@@ -1,12 +1,12 @@
 package watchers
 
 import (
-	"time"
 	"log"
+	"time"
 )
 
 const (
-	uptimeCommand = "uptime"
+	uptimeCommand      = "uptime"
 	uptimeLoopInterval = time.Hour * 24
 )
 

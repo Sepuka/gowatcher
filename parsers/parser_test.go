@@ -1,12 +1,12 @@
 package parsers
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 type perLineDataSet struct {
-	text string
+	text     string
 	expected []string
 }
 

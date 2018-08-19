@@ -1,9 +1,9 @@
 package pack
 
 import (
-	"github.com/sepuka/gowatcher/watchers"
-	"github.com/sepuka/gowatcher/env"
 	"fmt"
+	"github.com/sepuka/gowatcher/env"
+	"github.com/sepuka/gowatcher/watchers"
 )
 
 func FormatText(data watchers.WatcherResult, mode watchers.FormatMode) string {

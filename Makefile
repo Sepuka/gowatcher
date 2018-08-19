@@ -2,6 +2,7 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 GORUN=$(GOCMD) run
 GOGET=$(GOCMD) get
+GOFMT=gofmt
 BUILD=`git rev-parse HEAD`
 TIMEBUILD=`date -u '+%Y-%m-%d_%I:%M:%S%p'`
 OUT_FILE=watcher
@@ -35,4 +36,4 @@ test:
 	$(GOCMD) test -v ./...
 
 format:
-	$(GOCMD) fmt
+	$(GOFMT) -w .

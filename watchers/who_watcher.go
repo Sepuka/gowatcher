@@ -1,15 +1,15 @@
 package watchers
 
 import (
-	"time"
-	"log"
-	"github.com/sepuka/gowatcher/parsers"
 	"fmt"
+	"github.com/sepuka/gowatcher/parsers"
+	"log"
+	"time"
 )
 
 const (
-	whoCommand         = "who"
-	whoLoopInterval    = time.Second * 2
+	whoCommand      = "who"
+	whoLoopInterval = time.Second * 2
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 )
 
 func Who(c chan<- WatcherResult) {
-	result := RunCommand(whoCommand, "-u")// with PID
+	result := RunCommand(whoCommand, "-u") // with PID
 	notifyAboutNewUsers(result, c)
 
 	for {

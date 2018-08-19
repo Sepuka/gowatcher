@@ -1,8 +1,8 @@
 package env
 
 import (
-	"os"
 	"github.com/gravitational/log"
+	"os"
 )
 
 func GetCurrentHost() string {

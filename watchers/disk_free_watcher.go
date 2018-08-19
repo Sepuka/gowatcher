@@ -1,18 +1,18 @@
 package watchers
 
 import (
-	"strings"
-	"fmt"
-	"regexp"
 	"bytes"
-	"time"
+	"fmt"
 	"log"
+	"regexp"
+	"strings"
+	"time"
 )
 
 const (
 	diskFreeCommand = "df"
- 	outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
-	dfLoopInterval = time.Hour * 6
+	outputFormat    = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
+	dfLoopInterval  = time.Hour * 6
 )
 
 func DiskFree(c chan<- WatcherResult) {
