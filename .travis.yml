@@ -3,4 +3,7 @@ go:
   - master
 install:
   - go get github.com/sevlyar/go-daemon
-  - go get github.com/tkanos/gonfig
+  - go get github.com/stevenroose/gonfig
+  - go get github.com/gravitational/log
+  - go get github.com/stretchr/testify
+go_import_path: github.com/sepuka/gowatcher
