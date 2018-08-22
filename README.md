@@ -24,7 +24,7 @@ Makefile shortcuts:
     make test       run tests
 ```
 
-How it is works?
+How does it work?
 =====
 It send to receivers (slack or telegram) messages periodically, like this:
 ```
