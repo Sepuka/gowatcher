@@ -3,6 +3,7 @@ package watchers
 import (
 	"bytes"
 	"fmt"
+	"github.com/sepuka/gowatcher/command"
 	"log"
 	"regexp"
 	"strings"
@@ -15,20 +16,21 @@ const (
 	dfLoopInterval  = time.Hour * 6
 )
 
-func DiskFree(c chan<- WatcherResult) {
-	result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
-	result.text = parse(result.raw)
+func DiskFree(c chan<- command.Result) {
+	cmd := command.NewCmd(diskFreeCommand, []string{"-hl", "--type=ext4", "--type=ext2", "--type=vfat"})
+	raw := command.Run(cmd)
+	result := command.NewResult(raw.GetName(), parse(raw.GetText()), raw.GetError())
 	c <- result
 
 	for {
 		select {
 		case <-time.After(dfLoopInterval):
-			result := RunCommand(diskFreeCommand, "-hl", "--type=ext4", "--type=ext2", "--type=vfat")
-			if result.IsFailure() {
-				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError())
+			raw := command.Run(cmd)
+			if raw.IsFailure() {
+				log.Printf("Watcher %v failed: %v", result.GetName(), result.GetError().Error())
 				break
 			}
-			result.text = parse(result.raw)
+			result := command.NewResult(raw.GetName(), parse(raw.GetText()), raw.GetError())
 			c <- result
 		}
 	}

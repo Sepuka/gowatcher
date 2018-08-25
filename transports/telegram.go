@@ -3,6 +3,7 @@ package transports
 import (
 	"fmt"
 	"github.com/gravitational/log"
+	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/pack"
 	"github.com/sepuka/gowatcher/watchers"
 	"io"
@@ -14,7 +15,7 @@ const (
 	formatJson           = "application/json"
 )
 
-func SendTelegramMessage(data watchers.WatcherResult, config watchers.TransportTelegram) (resp *http.Response, err error) {
+func SendTelegramMessage(data command.Result, config watchers.TransportTelegram) (resp *http.Response, err error) {
 	telegramApi := config.Api
 	url := fmt.Sprintf(telegramPathTemplate, telegramApi, config.BotId, config.Token)
 	body := buildRequest(data, config)
@@ -22,14 +23,14 @@ func SendTelegramMessage(data watchers.WatcherResult, config watchers.TransportT
 	return http.Post(url, config.Format, body)
 }
 
-func SendUrgentMessage(data watchers.WatcherResult, config watchers.TransportTelegram) (resp *http.Response, err error) {
+func SendUrgentMessage(data command.Result, config watchers.TransportTelegram) (resp *http.Response, err error) {
 	urgent := config
 	urgent.SilentNotify = false
 
 	return SendTelegramMessage(data, urgent)
 }
 
-func buildRequest(data watchers.WatcherResult, config watchers.TransportTelegram) io.Reader {
+func buildRequest(data command.Result, config watchers.TransportTelegram) io.Reader {
 	text := pack.FormatText(data, config.TextMode)
 	d := map[string]interface{}{
 		"chat_id":              config.ChatId,

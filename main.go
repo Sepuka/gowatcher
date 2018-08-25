@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
 	"github.com/stevenroose/gonfig"
@@ -22,7 +23,7 @@ var (
 	githash       = "githash not present"
 	stop          = make(chan struct{})
 	done          = make(chan struct{})
-	watcherResult = make(chan watchers.WatcherResult)
+	watcherResult = make(chan command.Result)
 	signal        = flag.String("s", "", "send signal to the daemon\nstop - to stop daemon")
 	daemonize     = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode      = flag.Bool("t", false, "Test mode")

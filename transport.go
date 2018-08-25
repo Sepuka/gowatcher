@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/transports"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/stevenroose/gonfig"
@@ -20,7 +21,7 @@ func initConfig() {
 	slackConfig.TextMode = getTextMode(sconf["textMode"].(string))
 }
 
-func Transmitter(c <-chan watchers.WatcherResult) {
+func Transmitter(c <-chan command.Result) {
 	initConfig()
 
 	for {
@@ -44,10 +45,10 @@ func getTextMode(mode string) watchers.FormatMode {
 	}
 }
 
-func sendToTelegram(msg watchers.WatcherResult, config watchers.TransportTelegram) {
+func sendToTelegram(msg command.Result, config watchers.TransportTelegram) {
 	transports.SendTelegramMessage(msg, config)
 }
 
-func sendToSlack(msg watchers.WatcherResult, config watchers.TransportSlack) {
+func sendToSlack(msg command.Result, config watchers.TransportSlack) {
 	transports.SendSlackMessage(msg, config)
 }

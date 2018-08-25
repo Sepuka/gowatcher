@@ -1,12 +1,13 @@
 package transports
 
 import (
+	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/pack"
 	"github.com/sepuka/gowatcher/watchers"
 	"net/http"
 )
 
-func SendSlackMessage(msg watchers.WatcherResult, config watchers.TransportSlack) {
+func SendSlackMessage(msg command.Result, config watchers.TransportSlack) {
 	d := map[string]interface{}{
 		"text": pack.FormatText(msg, config.TextMode),
 	}

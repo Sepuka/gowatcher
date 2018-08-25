@@ -2,11 +2,12 @@ package pack
 
 import (
 	"fmt"
+	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/env"
 	"github.com/sepuka/gowatcher/watchers"
 )
 
-func FormatText(data watchers.WatcherResult, mode watchers.FormatMode) string {
+func FormatText(data command.Result, mode watchers.FormatMode) string {
 	host := env.GetCurrentHost()
 
 	switch mode {
