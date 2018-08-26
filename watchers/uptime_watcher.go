@@ -12,5 +12,6 @@ const (
 
 func Uptime(c chan<- command.Result) {
 	cmd := command.NewCmd(uptimeCommand, []string{})
-	command.Runner(cmd, uptimeLoopInterval, c)
+	resultHandler := command.NewDummyResultHandler(c)
+	command.Runner(cmd, uptimeLoopInterval, resultHandler)
 }

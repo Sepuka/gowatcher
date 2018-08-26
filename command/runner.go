@@ -1,11 +1,11 @@
 package command
 
 import (
-	"time"
 	"log"
+	"time"
 )
-
-func Runner(cmd Cmd, period time.Duration, c chan<- Result) {
+// TODO add
+func Runner(cmd Command, period time.Duration, resultHandler ResultHandler) {
 	for {
 		select {
 		case <-time.After(period):
@@ -15,7 +15,7 @@ func Runner(cmd Cmd, period time.Duration, c chan<- Result) {
 				log.Printf("Watcher %v failed: %v.", result.GetName(), result.GetError().Error())
 				break
 			}
-			c <- result
+			resultHandler.Handle(result)
 		}
 	}
 }

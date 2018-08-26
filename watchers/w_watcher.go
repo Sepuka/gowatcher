@@ -12,5 +12,6 @@ const (
 
 func W(c chan<- command.Result) {
 	cmd := command.NewCmd(wCommand, []string{})
-	command.Runner(cmd, wLoopInterval, c)
+	resultHandler := command.NewDummyResultHandler(c)
+	command.Runner(cmd, wLoopInterval, resultHandler)
 }

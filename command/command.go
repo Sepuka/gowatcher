@@ -41,7 +41,7 @@ type Cmd struct {
 	args []string
 }
 
-func NewCmd(cmd string, args []string) Cmd {
+func NewCmd(cmd string, args []string) Command {
 	return Cmd{cmd, args}
 }
 
