@@ -6,15 +6,14 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
-	"github.com/stevenroose/gonfig"
 	"log"
 	"os"
 	"syscall"
 	"time"
+	"github.com/sepuka/gowatcher/config"
 )
 
 const (
-	configPath = "./config.json"
 	daemonName = "gowatcher"
 )
 
@@ -28,7 +27,6 @@ var (
 	daemonize     = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode      = flag.Bool("t", false, "Test mode")
 	version       = flag.Bool("version", false, "Print version info")
-	config        = watchers.Configuration{}
 	cntxt         = &daemon.Context{
 		PidFileName: "pid",
 		PidFilePerm: 0644,
@@ -41,7 +39,7 @@ var (
 )
 
 func init() {
-	readConfig()
+	config.InitConfig()
 	go Transmitter(watcherResult)
 }
 
@@ -73,7 +71,7 @@ func main() {
 	}
 
 	if !daemon.WasReborn() && !*daemonize {
-		runWatchers()
+		watchers.RunWatchers(watcherResult)
 		log.Println("Press <Ctrl>+C to exit")
 		daemonLoop()
 		return
@@ -91,7 +89,7 @@ func main() {
 
 	log.Println("watcher daemon started")
 
-	runWatchers()
+	watchers.RunWatchers(watcherResult)
 
 	go daemonLoop()
 
@@ -102,27 +100,8 @@ func main() {
 	log.Println("daemon terminated.")
 }
 
-func readConfig() {
-	err := gonfig.Load(&config, gonfig.Conf{
-		FileDefaultFilename: configPath,
-		FileDecoder:         gonfig.DecoderJSON,
-		FlagIgnoreUnknown:   true,
-	})
-	if err != nil {
-		log.Printf("Cannot read config: %v", err)
-		os.Exit(1)
-	}
-}
-
 func isDaemonFlagsPresent() bool {
 	return len(daemon.ActiveFlags()) > 0
-}
-
-func runWatchers() {
-	go watchers.DiskFree(watcherResult)
-	go watchers.Uptime(watcherResult)
-	go watchers.Who(watcherResult)
-	go watchers.W(watcherResult)
 }
 
 func daemonLoop() {

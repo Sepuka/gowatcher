@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 )
-// TODO add
+
 func Runner(cmd Command, period time.Duration, resultHandler ResultHandler) {
 	for {
 		select {

@@ -3,11 +3,11 @@ package transports
 import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/pack"
-	"github.com/sepuka/gowatcher/watchers"
 	"net/http"
+	"github.com/sepuka/gowatcher/config"
 )
 
-func SendSlackMessage(msg command.Result, config watchers.TransportSlack) {
+func SendSlackMessage(msg command.Result, config config.TransportSlack) {
 	d := map[string]interface{}{
 		"text": pack.FormatText(msg, config.TextMode),
 	}

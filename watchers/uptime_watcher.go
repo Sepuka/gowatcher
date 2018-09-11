@@ -3,15 +3,16 @@ package watchers
 import (
 	"github.com/sepuka/gowatcher/command"
 	"time"
+	"github.com/sepuka/gowatcher/config"
 )
 
 const (
 	uptimeCommand      = "uptime"
-	uptimeLoopInterval = time.Hour * 24
+	UptimeLoopInterval = time.Hour * 24
 )
 
-func Uptime(c chan<- command.Result) {
+func Uptime(c chan<- command.Result, config config.WatcherConfig) {
 	cmd := command.NewCmd(uptimeCommand, []string{})
 	resultHandler := command.NewDummyResultHandler(c)
-	command.Runner(cmd, uptimeLoopInterval, resultHandler)
+	command.Runner(cmd, config.GetLoop(), resultHandler)
 }

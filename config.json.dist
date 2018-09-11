@@ -15,5 +15,23 @@
       "silentNotify": true,
       "textMode": "HTML"
     }
-  }
+  },
+  "watchers": [
+    {
+      "name": "disk_free",
+      "loop": 21600 //6 hours
+    },
+    {
+      "name": "uptime",
+      "loop": 86400 //24 hours
+    },
+    {
+      "name": "who",
+      "loop": 2
+    },
+    {
+      "name": "w",
+      "loop": 21600 //6 hours
+    }
+  ]
 }

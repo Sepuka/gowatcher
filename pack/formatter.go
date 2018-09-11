@@ -4,32 +4,32 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/env"
-	"github.com/sepuka/gowatcher/watchers"
+	"github.com/sepuka/gowatcher/config"
 )
 
-func FormatText(data command.Result, mode watchers.FormatMode) string {
+func FormatText(data command.Result, mode config.FormatMode) string {
 	host := env.GetCurrentHost()
 
 	switch mode {
-	case watchers.TextModeHTML:
+	case config.TextModeHTML:
 		return fmt.Sprintf(
 			"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
 			host,
 			data.GetName(),
 			data.GetText())
-	case watchers.TextModeSlack:
+	case config.TextModeSlack:
 		return fmt.Sprintf(
 			"*%v* *%v* says: ```%s```",
 			host,
 			data.GetName(),
 			data.GetText())
-	case watchers.TextModeMarkdown:
+	case config.TextModeMarkdown:
 		return fmt.Sprintf(
 			"%v *%v* says:\n ```%s```",
 			host,
 			data.GetName(),
 			data.GetText())
-	case watchers.TextModeRaw:
+	case config.TextModeRaw:
 		return fmt.Sprintf(
 			"%v %v says: %s",
 			host,
