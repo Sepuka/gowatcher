@@ -20,6 +20,12 @@ var (
 		*config.NewWatcherConfig(WhoAgent, WhoLoopInterval),
 		*config.NewWatcherConfig(WAgent, WLoopInterval),
 	}
+	agents = map[string]func(chan<- command.Result, config.WatcherConfig){
+		DiskFreeAgent: DiskFree,
+		UpTimeAgent: Uptime,
+		WhoAgent: Who,
+		WAgent: W,
+	}
 )
 
 func RunWatchers(c chan<- command.Result) {
@@ -34,15 +40,8 @@ func run(c chan<- command.Result, config config.WatcherConfig, f func(chan<- com
 }
 
 func getAgent(agentName string) func(chan<- command.Result, config.WatcherConfig) {
-	switch agentName {
-	case DiskFreeAgent:
-		return DiskFree
-	case UpTimeAgent:
-		return Uptime
-	case WhoAgent:
-		return Who
-	case WAgent:
-		return W
+	if agent, ok := agents[agentName]; ok {
+		return agent
 	}
 	panic(fmt.Sprint("Unknown watcher name ", agentName))
 }
