@@ -39,11 +39,21 @@ New user detected: username       pts/1        2018-08-18 17:39 00:02       1916
 ```
 Now implemented 4 handlers (watchers): `w`, `who`, `df`, `uptime`. Each one run self command and send the result to receivers.
 
+How to configure it?
+=====
+1. Copy config.json.dist to folder with program
+`cp config.json.dist config.json`
+2. Modify the configuration
+`vim config.json`
+3. Restart the app
+`watcher -s stop && watcher -d`
+
 Planned features:
 =====
 1. In case one receiver is not available (for example, telegram is blocked) then other receivers must report this.
-2. Each watcher has self time of loop in settings
+2. :heavy_check_mark: ~~Each watcher has self time of loop in settings~~
 3. Watchers supports some args in settings
 4. `df` watcher can report about critical free size of partial
 5. Exists _load average_ graph which published to receivers periodically
 6. Released _email_ receiver with customizable watchers
+7. Hot reconfigure app
