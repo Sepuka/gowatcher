@@ -14,7 +14,7 @@ const (
 )
 
 var (
-	baseConfigs config.WatcherConfigs = []config.WatcherConfig{
+	baseConfigs = []config.WatcherConfig{
 		*config.NewWatcherConfig(diskFreeAgentName, DfLoopInterval),
 		*config.NewWatcherConfig(upTimeAgentName, UptimeLoopInterval),
 		*config.NewWatcherConfig(whoAgentName, WhoLoopInterval),

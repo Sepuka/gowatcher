@@ -32,7 +32,7 @@ run: get
 run_test: get
 	$(GORUN) ./*.go -t
 
-test:
+tests:
 	$(GOCMD) test -v ./...
 
 format:

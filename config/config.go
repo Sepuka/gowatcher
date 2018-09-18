@@ -23,7 +23,7 @@ const (
 var (
 	TelegramConfig TransportTelegram
 	SlackConfig    TransportSlack
-	WatchersConfig WatcherConfigs
+	WatchersConfig []WatcherConfig
 	config         configuration
 )
 
@@ -67,7 +67,7 @@ func InitConfig() {
 	for _, watcher := range config.Watchers {
 		a := WatcherConfig{
 			watcher[watcherName].(string),
-			time.Duration(watcher[watcherLoop].(float64)),
+			time.Duration(watcher[watcherLoop].(float64)) * time.Second,
 		}
 		WatchersConfig = append(WatchersConfig, a)
 	}

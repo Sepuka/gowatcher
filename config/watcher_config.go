@@ -4,17 +4,6 @@ import (
 	"time"
 )
 
-type WatcherConfigs []WatcherConfig
-
-func (ws WatcherConfigs) Tune(defaultConfig WatcherConfig) WatcherConfig {
-	for _, s := range ws {
-		if s.name == defaultConfig.GetName() {
-			return WatcherConfig{s.name, defaultConfig.GetLoop()}
-		}
-	}
-	return defaultConfig
-}
-
 func NewWatcherConfig(name string, loop time.Duration) *WatcherConfig {
 	return &WatcherConfig{name, loop}
 }
@@ -29,10 +18,10 @@ func (setting WatcherConfig) GetName() string {
 }
 
 func (setting WatcherConfig) GetLoop() time.Duration {
-	return time.Duration(setting.loop)
+	return setting.loop
 }
 
-func (baseConfig WatcherConfig) Merge(tunedConfig WatcherConfigs) WatcherConfig {
+func (baseConfig WatcherConfig) Merge(tunedConfig []WatcherConfig) WatcherConfig {
 	for _, tuned := range tunedConfig {
 		if tuned.GetName() == baseConfig.GetName() {
 			// не просто возвращать, а делать мерж того, что отличается
