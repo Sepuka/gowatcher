@@ -7,35 +7,35 @@ import (
 )
 
 const (
-	DiskFreeAgent = "DiskFree"
-	UpTimeAgent   = "Uptime"
-	WhoAgent      = "Who"
-	WAgent        = "W"
+	diskFreeAgentName = "DiskFree"
+	upTimeAgentName   = "Uptime"
+	whoAgentName      = "Who"
+	wAgentName        = "W"
 )
 
 var (
 	baseConfigs config.WatcherConfigs = []config.WatcherConfig{
-		*config.NewWatcherConfig(DiskFreeAgent, DfLoopInterval),
-		*config.NewWatcherConfig(UpTimeAgent, UptimeLoopInterval),
-		*config.NewWatcherConfig(WhoAgent, WhoLoopInterval),
-		*config.NewWatcherConfig(WAgent, WLoopInterval),
+		*config.NewWatcherConfig(diskFreeAgentName, DfLoopInterval),
+		*config.NewWatcherConfig(upTimeAgentName, UptimeLoopInterval),
+		*config.NewWatcherConfig(whoAgentName, WhoLoopInterval),
+		*config.NewWatcherConfig(wAgentName, WLoopInterval),
 	}
 	agents = map[string]func(chan<- command.Result, config.WatcherConfig){
-		DiskFreeAgent: DiskFree,
-		UpTimeAgent: Uptime,
-		WhoAgent: Who,
-		WAgent: W,
+		diskFreeAgentName: DiskFree,
+		upTimeAgentName:   Uptime,
+		whoAgentName:      Who,
+		wAgentName:        W,
 	}
 )
 
 func RunWatchers(c chan<- command.Result) {
-	for _, st := range baseConfigs {
-		cfg := st.Merge(config.WatchersConfig)
-		run(c, cfg, getAgent(st.GetName()))
+	for _, baseConfig := range baseConfigs {
+		preparedConfig := baseConfig.Merge(config.WatchersConfig)
+		start(c, preparedConfig, getAgent(baseConfig.GetName()))
 	}
 }
 
-func run(c chan<- command.Result, config config.WatcherConfig, f func(chan<- command.Result, config.WatcherConfig)) {
+func start(c chan<- command.Result, config config.WatcherConfig, f func(chan<- command.Result, config.WatcherConfig)) {
 	go f(c, config)
 }
 
