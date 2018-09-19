@@ -6,13 +6,10 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
 	configPath = "./config.json"
-	watcherName = "name"
-	watcherLoop = "loop"
 	TextModeHTML     FormatMode = "html"
 	TextModeMarkdown FormatMode = "markdown"
 	TextModeRaw      FormatMode = "raw"
@@ -64,13 +61,7 @@ func InitConfig() {
 	gonfig.LoadMap(&SlackConfig, sconf, gonfig.Conf{})
 	SlackConfig.TextMode = getTextMode(sconf["textMode"].(string))
 
-	for _, watcher := range config.Watchers {
-		a := WatcherConfig{
-			watcher[watcherName].(string),
-			time.Duration(watcher[watcherLoop].(float64)) * time.Second,
-		}
-		WatchersConfig = append(WatchersConfig, a)
-	}
+	initWatcherConfigs()
 }
 
 func readConfig() {

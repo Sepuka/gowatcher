@@ -57,4 +57,4 @@ Planned features:
 5. Exists _load average_ graph which published to receivers periodically
 6. Released _email_ receiver with customizable watchers
 7. Hot reconfigure app
-8. Min & Max loop constrains
+8. :heavy_check_mark: ~~Min & Max loop constrains~~

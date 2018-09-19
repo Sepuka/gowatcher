@@ -4,6 +4,13 @@ import (
 	"time"
 )
 
+const (
+	watcherNameSection = "name"
+	watcherLoopSection = "loop"
+	minLoop = time.Second
+	maxLoop = time.Hour * 24
+)
+
 func NewWatcherConfig(name string, loop time.Duration) *WatcherConfig {
 	return &WatcherConfig{name, loop}
 }
@@ -29,4 +36,27 @@ func (baseConfig WatcherConfig) Merge(tunedConfig []WatcherConfig) WatcherConfig
 		}
 	}
 	return baseConfig
+}
+
+func initWatcherConfigs() {
+	for _, watcher := range config.Watchers {
+		cfg := WatcherConfig{
+			watcher[watcherNameSection].(string),
+			toValidTime(watcher[watcherLoopSection].(float64)),
+		}
+		WatchersConfig = append(WatchersConfig, cfg)
+	}
+}
+
+func toValidTime(loopTime float64) time.Duration {
+	cfgLoopTime := time.Duration(loopTime) * time.Second
+
+	if cfgLoopTime < minLoop {
+		return minLoop
+	}
+	if cfgLoopTime > maxLoop {
+		return maxLoop
+	}
+
+	return cfgLoopTime
 }

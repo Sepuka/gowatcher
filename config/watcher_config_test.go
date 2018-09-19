@@ -6,16 +6,16 @@ import (
 )
 
 var (
-	baseDataProvider WatcherConfigs = []WatcherConfig{
+	baseDataProvider = []WatcherConfig{
 		{"name1", 1},
 		{"name2", 2},
 		{"name3", 3},
 	}
-	tunedDataProvider WatcherConfigs = []WatcherConfig{
+	tunedDataProvider = []WatcherConfig{
 		{"name1", 1},
 		{"name2", 3},
 	}
-	expectedConfigDataProvider WatcherConfigs = []WatcherConfig{
+	expectedConfigDataProvider = []WatcherConfig{
 		{"name1", 1},
 		{"name2", 3},
 		{"name3", 3},
