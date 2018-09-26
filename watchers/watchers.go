@@ -1,9 +1,10 @@
 package watchers
 
 import (
+	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	"fmt"
+	"github.com/sepuka/gowatcher/stats"
 )
 
 const (
@@ -33,6 +34,7 @@ func RunWatchers(c chan<- command.Result) {
 		preparedConfig := baseConfig.Merge(config.WatchersConfig)
 		start(c, preparedConfig, getAgent(baseConfig.GetName()))
 	}
+	stats.LoadAverage(c)
 }
 
 func start(c chan<- command.Result, config config.WatcherConfig, f func(chan<- command.Result, config.WatcherConfig)) {

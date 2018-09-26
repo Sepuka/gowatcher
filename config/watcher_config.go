@@ -7,8 +7,8 @@ import (
 const (
 	watcherNameSection = "name"
 	watcherLoopSection = "loop"
-	minLoop = time.Second
-	maxLoop = time.Hour * 24
+	minLoop            = time.Second
+	maxLoop            = time.Hour * 24
 )
 
 func NewWatcherConfig(name string, loop time.Duration) *WatcherConfig {

@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
 	"log"
 	"os"
 	"syscall"
 	"time"
-	"github.com/sepuka/gowatcher/config"
 )
 
 const (

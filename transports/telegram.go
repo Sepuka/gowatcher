@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/gravitational/log"
 	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/pack"
 	"io"
 	"net/http"
-	"github.com/sepuka/gowatcher/config"
 )
 
 const (

@@ -1,26 +1,28 @@
 package config
 
 import (
-	"os"
+	"github.com/go-redis/redis"
 	"github.com/stevenroose/gonfig"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
 const (
-	configPath = "./config.json"
+	configPath                  = "./config.json"
 	TextModeHTML     FormatMode = "html"
 	TextModeMarkdown FormatMode = "markdown"
 	TextModeRaw      FormatMode = "raw"
 	//https://get.slack.help/hc/en-us/articles/202288908-how-can-i-add-formatting-to-my-messages-
-	TextModeSlack    FormatMode = "slack"
+	TextModeSlack FormatMode = "slack"
 )
 
 var (
 	TelegramConfig TransportTelegram
 	SlackConfig    TransportSlack
 	WatchersConfig []WatcherConfig
+	KeyValueStore  RedisWriter
 	config         configuration
 )
 
@@ -36,7 +38,7 @@ type TransportTelegram struct {
 	Token        string     `id:"token"`
 }
 
-func (r *TransportTelegram) IsSilentNotify() string {
+func (r TransportTelegram) IsSilentNotify() string {
 	return strconv.FormatBool(r.SilentNotify)
 }
 
@@ -46,8 +48,9 @@ type TransportSlack struct {
 }
 
 type configuration struct {
-	Transports map[string]interface{} `id:"transports"`
-	Watchers []map[string]interface{} `id:"watchers"`
+	Transports    map[string]interface{}   `id:"transports"`
+	Watchers      []map[string]interface{} `id:"watchers"`
+	KeyValueStore map[string]interface{}   `id:"redis"`
 }
 
 func InitConfig() {
@@ -60,6 +63,16 @@ func InitConfig() {
 	sconf := config.Transports["slack"].(map[string]interface{})
 	gonfig.LoadMap(&SlackConfig, sconf, gonfig.Conf{})
 	SlackConfig.TextMode = getTextMode(sconf["textMode"].(string))
+
+	redisAddr := config.KeyValueStore["address"].(string)
+	redisPass := config.KeyValueStore["password"].(string)
+	redisDb, _ := config.KeyValueStore["db"].(float64)
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     redisAddr,
+		Password: redisPass,
+		DB:       int(redisDb),
+	})
+	KeyValueStore = RedisWriter{redisClient}
 
 	initWatcherConfigs()
 }

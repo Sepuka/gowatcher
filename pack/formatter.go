@@ -3,8 +3,8 @@ package pack
 import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
-	"github.com/sepuka/gowatcher/env"
 	"github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/env"
 )
 
 func FormatText(data command.Result, mode config.FormatMode) string {

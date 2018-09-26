@@ -58,3 +58,4 @@ Planned features:
 6. Released _email_ receiver with customizable watchers
 7. Hot reconfigure app
 8. :heavy_check_mark: ~~Min & Max loop constrains~~
+9. Add `system log` watcher for app errors

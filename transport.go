@@ -2,10 +2,9 @@ package main
 
 import (
 	"github.com/sepuka/gowatcher/command"
-	"github.com/sepuka/gowatcher/transports"
 	"github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/transports"
 )
-
 
 func Transmitter(c <-chan command.Result) {
 	for {

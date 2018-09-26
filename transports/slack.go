@@ -2,9 +2,9 @@ package transports
 
 import (
 	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/pack"
 	"net/http"
-	"github.com/sepuka/gowatcher/config"
 )
 
 func SendSlackMessage(msg command.Result, config config.TransportSlack) {
