@@ -3,17 +3,16 @@ package transports
 import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	"github.com/sepuka/gowatcher/pack"
 	"net/http"
 )
 
 func SendSlackMessage(msg command.Result, config config.TransportSlack) {
-	d := map[string]interface{}{
-		"text": pack.FormatText(msg, config.TextMode),
-	}
 	client := &http.Client{}
-	payload := pack.Encode(d)
-	req, _ := http.NewRequest("POST", config.Api, payload)
-	resp, _ := client.Do(req)
-	defer resp.Body.Close()
+
+	switch msg.GetType() {
+	case command.ImageContent:
+		sendImgRequest(client, msg, config)
+	default:
+		sendTextRequest(client, msg, config.Api, config.TextMode)
+	}
 }

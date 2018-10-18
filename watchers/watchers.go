@@ -5,6 +5,7 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/stats"
+	"github.com/sepuka/gowatcher/command/graph"
 )
 
 const (
@@ -12,6 +13,7 @@ const (
 	upTimeAgentName   = "Uptime"
 	whoAgentName      = "Who"
 	wAgentName        = "W"
+	laAgentName       = "LoadAvgGraph"
 )
 
 var (
@@ -20,12 +22,14 @@ var (
 		*config.NewWatcherConfig(upTimeAgentName, UptimeLoopInterval),
 		*config.NewWatcherConfig(whoAgentName, WhoLoopInterval),
 		*config.NewWatcherConfig(wAgentName, WLoopInterval),
+		*config.NewWatcherConfig(laAgentName, graph.LaGraphLoop),
 	}
 	agents = map[string]func(chan<- command.Result, config.WatcherConfig){
 		diskFreeAgentName: DiskFree,
 		upTimeAgentName:   Uptime,
 		whoAgentName:      Who,
 		wAgentName:        W,
+		laAgentName:       graph.LoadAvgGraph,
 	}
 )
 
@@ -34,7 +38,10 @@ func RunWatchers(c chan<- command.Result) {
 		preparedConfig := baseConfig.Merge(config.WatchersConfig)
 		start(c, preparedConfig, getAgent(baseConfig.GetName()))
 	}
-	stats.LoadAverage(c)
+}
+
+func RunStatCollectors(c chan<- command.Result) {
+	go stats.LoadAverage(c, config.Redis)
 }
 
 func start(c chan<- command.Result, config config.WatcherConfig, f func(chan<- command.Result, config.WatcherConfig)) {

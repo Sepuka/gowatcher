@@ -22,7 +22,7 @@ var (
 	TelegramConfig TransportTelegram
 	SlackConfig    TransportSlack
 	WatchersConfig []WatcherConfig
-	KeyValueStore  RedisWriter
+	Redis          RedisStore
 	config         configuration
 )
 
@@ -45,6 +45,8 @@ func (r TransportTelegram) IsSilentNotify() string {
 type TransportSlack struct {
 	Api      string     `id:"api" default:"https://slack.com/api"`
 	TextMode FormatMode `id:"textMode"`
+	FileUploadUrl string `id:"fileUploadUrl" default:"https://slack.com/api/files.upload"`
+	Token string `id:"token"`
 }
 
 type configuration struct {
@@ -72,7 +74,7 @@ func InitConfig() {
 		Password: redisPass,
 		DB:       int(redisDb),
 	})
-	KeyValueStore = RedisWriter{redisClient}
+	Redis = RedisStore{redisClient}
 
 	initWatcherConfigs()
 }

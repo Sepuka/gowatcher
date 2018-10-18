@@ -4,7 +4,9 @@
     "slack": {
       "api": "https://hooks.slack.com/services/XXX/YYY/ZZZ",
       // are supported values: Raw, HTML, Markdown, Slack
-      "textMode": "slack"
+      "textMode": "slack",
+      "fileUploadUrl": "https://slack.com/api/files.upload",
+      "token":"xoxp-XXX"
     },
     "telegram": {
       "api": "https://api.telegram.org",

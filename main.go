@@ -72,6 +72,7 @@ func main() {
 
 	if !daemon.WasReborn() && !*daemonize {
 		watchers.RunWatchers(watcherResult)
+		watchers.RunStatCollectors(watcherResult)
 		log.Println("Press <Ctrl>+C to exit")
 		daemonLoop()
 		return
@@ -90,6 +91,7 @@ func main() {
 	log.Println("watcher daemon started")
 
 	watchers.RunWatchers(watcherResult)
+	watchers.RunStatCollectors(watcherResult)
 
 	go daemonLoop()
 

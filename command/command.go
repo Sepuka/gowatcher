@@ -5,30 +5,46 @@ import (
 	"os/exec"
 )
 
+type ContentType string
+
+const (
+	PlainTextContent ContentType = "plain_text_content"
+	ImageContent ContentType = "image_content"
+)
+
 type Result struct {
 	watcherName string
-	text        string
+	content     string
 	error       error
+	contentType ContentType
+}
+
+func NewImgResult(name string, content string) Result {
+	return Result{name, content, nil, ImageContent}
 }
 
 func NewResult(name string, text string, err error) Result {
-	return Result{name, text, err}
+	return Result{name, text, err, PlainTextContent}
 }
 
-func (r *Result) GetText() string {
-	return r.text
+func (r Result) GetContent() string {
+	return r.content
 }
 
-func (r *Result) GetError() error {
+func (r Result) GetError() error {
 	return r.error
 }
 
-func (r *Result) IsFailure() bool {
+func (r Result) IsFailure() bool {
 	return r.error != nil
 }
 
-func (r *Result) GetName() string {
+func (r Result) GetName() string {
 	return r.watcherName
+}
+
+func (r Result) GetType() ContentType {
+	return r.contentType
 }
 
 type Command interface {
@@ -56,18 +72,10 @@ func (c Cmd) Args() []string {
 func Run(command Command) Result {
 	result, err := execute(command)
 	if err != nil {
-		return Result{
-			command.Command(),
-			"command failed",
-			err,
-		}
+		return NewResult(command.Command(), "command failed", err)
 	}
 
-	return Result{
-		command.Command(),
-		result,
-		nil,
-	}
+	return NewResult(command.Command(), result, nil)
 }
 
 func execute(command Command) (string, error) {

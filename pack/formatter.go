@@ -16,25 +16,25 @@ func FormatText(data command.Result, mode config.FormatMode) string {
 			"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
 			host,
 			data.GetName(),
-			data.GetText())
+			data.GetContent())
 	case config.TextModeSlack:
 		return fmt.Sprintf(
 			"*%v* *%v* says: ```%s```",
 			host,
 			data.GetName(),
-			data.GetText())
+			data.GetContent())
 	case config.TextModeMarkdown:
 		return fmt.Sprintf(
 			"%v *%v* says:\n ```%s```",
 			host,
 			data.GetName(),
-			data.GetText())
+			data.GetContent())
 	case config.TextModeRaw:
 		return fmt.Sprintf(
 			"%v %v says: %s",
 			host,
 			data.GetName(),
-			data.GetText())
+			data.GetContent())
 	default:
 		panic("Unknown format " + mode)
 	}

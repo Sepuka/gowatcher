@@ -18,7 +18,7 @@ func NewDfFormatResultHandler(c chan<- Result) ResultHandler {
 }
 
 func (handler DfFormatResultHandler) Handle(raw Result) {
-	handler.c <- NewResult(raw.GetName(), parse(raw.GetText()), raw.GetError())
+	handler.c <- NewResult(raw.GetName(), parse(raw.GetContent()), raw.GetError())
 }
 
 func parse(data string) string {

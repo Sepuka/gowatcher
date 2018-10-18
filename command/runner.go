@@ -17,6 +17,7 @@ func ReadFileLoop(fileName string, period time.Duration, resultHandler ResultHan
 				err,
 			)
 		}
+
 		return NewResult(
 			"Periodically file reader",
 			string(bytes[:]),

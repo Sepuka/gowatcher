@@ -2,22 +2,25 @@ package config
 
 import (
 	"github.com/go-redis/redis"
-	"log"
-	"fmt"
 )
 
-type RedisWriter struct {
+type RedisStore struct {
 	client *redis.Client
 }
 
-func (redis RedisWriter) Push(key string, value interface{}) error {
+func (redis RedisStore) Push(key string, value interface{}) error {
 	status := redis.client.LPush(key, value)
 
 	return status.Err()
 }
 
-func (redis RedisWriter) Trim(key string, cnt int) {
-	log.Println(cnt)
-	fmt.Println()
+func (redis RedisStore) Trim(key string, cnt int) {
 	redis.client.LTrim(key, 0, int64(cnt))
+}
+
+func (redis RedisStore) List(key string) []string {
+	length := redis.client.LLen(key)
+	cmd := redis.client.LRange(key, 0, length.Val())
+
+	return cmd.Val()
 }

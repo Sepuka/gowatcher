@@ -16,7 +16,7 @@ func NewLinesChangedResultHandler(c chan<- Result) ResultHandler {
 }
 
 func (handler LinesChangedResultHandler) Handle(raw Result) {
-	rows := parsers.SplitPerLines(raw.GetText())
+	rows := parsers.SplitPerLines(raw.GetContent())
 	for _, userInfo := range rows {
 		if !handler.isUserRegistered(userInfo) {
 			userInfoText := fmt.Sprintln("New user detected:", userInfo)
@@ -25,7 +25,7 @@ func (handler LinesChangedResultHandler) Handle(raw Result) {
 		}
 	}
 
-	handler.users = parsers.SplitPerLines(raw.GetText())
+	handler.users = parsers.SplitPerLines(raw.GetContent())
 }
 
 func (handler LinesChangedResultHandler) isUserRegistered(userInfo string) bool {
