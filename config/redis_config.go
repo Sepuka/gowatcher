@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/go-redis/redis"
 	"log"
-	"fmt"
 )
 
 type RedisWriter struct {
@@ -18,6 +17,5 @@ func (redis RedisWriter) Push(key string, value interface{}) error {
 
 func (redis RedisWriter) Trim(key string, cnt int) {
 	log.Println(cnt)
-	fmt.Println()
 	redis.client.LTrim(key, 0, int64(cnt))
 }
