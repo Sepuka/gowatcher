@@ -18,6 +18,7 @@ func sendTextRequest(httpClient *http.Client, msg command.Result, url string, fo
 	req, _ := http.NewRequest("POST", url, payload)
 
 	resp, _ := httpClient.Do(req)
+	log.Printf("Slack request to '%v' got '%v' status", url, resp.Status)
 	_, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {

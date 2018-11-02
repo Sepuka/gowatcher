@@ -20,20 +20,24 @@
   },
   "watchers": [
     {
-      "name": "disk_free",
+      "name": "DiskFree",
       "loop": 21600 //6 hours
     },
     {
-      "name": "uptime",
+      "name": "Uptime",
       "loop": 86400 //24 hours
     },
     {
-      "name": "who",
+      "name": "Who",
       "loop": 2
     },
     {
-      "name": "w",
+      "name": "W",
       "loop": 21600 //6 hours
+    },
+    {
+      "name": "LoadAvgGraph",
+      "loop": 86400
     }
   ],
   "redis": {
