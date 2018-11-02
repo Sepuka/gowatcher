@@ -12,10 +12,10 @@ type LinesChangedResultHandler struct {
 
 // Send msg to chan if it detect new lines of watcher's output
 func NewLinesChangedResultHandler(c chan<- Result) ResultHandler {
-	return LinesChangedResultHandler{c, []string{}}
+	return &LinesChangedResultHandler{c, []string{}}
 }
 
-func (handler LinesChangedResultHandler) Handle(raw Result) {
+func (handler *LinesChangedResultHandler) Handle(raw Result) {
 	rows := parsers.SplitPerLines(raw.GetContent())
 	for _, userInfo := range rows {
 		if !handler.isUserRegistered(userInfo) {
