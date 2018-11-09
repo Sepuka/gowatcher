@@ -40,7 +40,7 @@ type FilesUploadAPIResponse struct {
 	File  UploadedFile `json:"file"`
 }
 
-func sendImgRequest(httpClient *http.Client, msg command.Result, cfg config.TransportSlack) {
+func sendImg(httpClient *http.Client, msg command.Result, cfg config.TransportSlack) {
 	request, err := buildImgRequest(msg, cfg.FileUploadUrl, cfg.Token)
 	if err != nil {
 		log.Println("Build slack request failed: ", err)

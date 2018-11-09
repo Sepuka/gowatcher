@@ -11,8 +11,8 @@ func SendSlackMessage(msg command.Result, config config.TransportSlack) {
 
 	switch msg.GetType() {
 	case command.ImageContent:
-		sendImgRequest(client, msg, config)
+		sendImg(client, msg, config)
 	default:
-		sendTextRequest(client, msg, config.Api, config.TextMode)
+		sendText(client, msg, config.Api, config.TextMode)
 	}
 }

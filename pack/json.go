@@ -12,7 +12,3 @@ func Encode(data map[string]interface{}) io.Reader {
 
 	return out
 }
-
-func Decode() {
-
-}

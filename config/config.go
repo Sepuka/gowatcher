@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+type FormatMode string
+type LogLevel string
+
 const (
 	configPath                  = "./config.json"
 	TextModeHTML     FormatMode = "html"
@@ -16,6 +19,8 @@ const (
 	TextModeRaw      FormatMode = "raw"
 	//https://get.slack.help/hc/en-us/articles/202288908-how-can-i-add-formatting-to-my-messages-
 	TextModeSlack FormatMode = "slack"
+	LogLevelDebug    LogLevel = "debug"
+	LogLevelDefault  LogLevel = "default"
 )
 
 var (
@@ -23,10 +28,9 @@ var (
 	SlackConfig    TransportSlack
 	WatchersConfig []WatcherConfig
 	Redis          RedisStore
+	Log            Logger
 	config         configuration
 )
-
-type FormatMode string
 
 type TransportTelegram struct {
 	Api          string     `id:"api"`
@@ -49,10 +53,15 @@ type TransportSlack struct {
 	Token         string     `id:"token"`
 }
 
+type Logger struct {
+	Level         LogLevel   `id:"level" default:"default"`
+}
+
 type configuration struct {
 	Transports    map[string]interface{}   `id:"transports"`
 	Watchers      []map[string]interface{} `id:"watchers"`
 	KeyValueStore map[string]interface{}   `id:"redis"`
+	Logger        Logger                   `id:"log"`
 }
 
 func InitConfig() {
@@ -75,6 +84,8 @@ func InitConfig() {
 		DB:       int(redisDb),
 	})
 	Redis = RedisStore{redisClient}
+
+	Log = config.Logger// переписать это все
 
 	initWatcherConfigs()
 }

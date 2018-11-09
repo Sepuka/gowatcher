@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func sendTextRequest(httpClient *http.Client, msg command.Result, url string, format config.FormatMode) {
+func sendText(httpClient *http.Client, msg command.Result, url string, format config.FormatMode) {
 	d := map[string]interface{}{
 		"text": pack.FormatText(msg, format),
 	}
