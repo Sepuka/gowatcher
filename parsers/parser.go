@@ -1,10 +1,10 @@
 package parsers
 
 import (
+	"log"
+	"strconv"
 	"strings"
 	"unicode"
-	"strconv"
-	"log"
 )
 
 func SplitPerLines(data string) []string {

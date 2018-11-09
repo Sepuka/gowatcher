@@ -1,16 +1,16 @@
 package graph
 
 import (
-	"time"
+	"bytes"
+	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/parsers"
+	"github.com/sepuka/gowatcher/stats"
 	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
-	"gonum.org/v1/plot/plotter"
-	"github.com/sepuka/gowatcher/parsers"
-	"github.com/sepuka/gowatcher/config"
-	"github.com/sepuka/gowatcher/stats"
-	"github.com/sepuka/gowatcher/command"
-	"bytes"
+	"time"
 )
 
 const (
@@ -33,7 +33,7 @@ func buildImg(data plotter.XYs) command.Result {
 	p := makePlot()
 	plotutil.AddLinePoints(p, "la", data)
 	b := &bytes.Buffer{}
-	writer, _ := p.WriterTo(32*vg.Inch, 4*vg.Inch, "png")// size to config
+	writer, _ := p.WriterTo(32*vg.Inch, 4*vg.Inch, "png") // size to config
 	writer.WriteTo(b)
 
 	return command.NewImgResult(watcherName, b.String())

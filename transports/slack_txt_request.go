@@ -4,13 +4,13 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/pack"
-	"net/http"
 	"io/ioutil"
 	"log"
+	"net/http"
 )
 
 func sendTextRequest(httpClient *http.Client, msg command.Result, url string, format config.FormatMode) {
-	d := map[string]interface{} {
+	d := map[string]interface{}{
 		"text": pack.FormatText(msg, format),
 	}
 

@@ -9,7 +9,7 @@ type ContentType string
 
 const (
 	PlainTextContent ContentType = "plain_text_content"
-	ImageContent ContentType = "image_content"
+	ImageContent     ContentType = "image_content"
 )
 
 type Result struct {

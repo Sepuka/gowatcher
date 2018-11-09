@@ -3,9 +3,9 @@ package watchers
 import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/command/graph"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/stats"
-	"github.com/sepuka/gowatcher/command/graph"
 )
 
 const (

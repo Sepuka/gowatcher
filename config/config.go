@@ -43,10 +43,10 @@ func (r TransportTelegram) IsSilentNotify() string {
 }
 
 type TransportSlack struct {
-	Api      string     `id:"api" default:"https://slack.com/api"`
-	TextMode FormatMode `id:"textMode"`
-	FileUploadUrl string `id:"fileUploadUrl" default:"https://slack.com/api/files.upload"`
-	Token string `id:"token"`
+	Api           string     `id:"api" default:"https://slack.com/api"`
+	TextMode      FormatMode `id:"textMode"`
+	FileUploadUrl string     `id:"fileUploadUrl" default:"https://slack.com/api/files.upload"`
+	Token         string     `id:"token"`
 }
 
 type configuration struct {

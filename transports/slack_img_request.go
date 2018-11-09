@@ -1,16 +1,16 @@
 package transports
 
 import (
-	"github.com/sepuka/gowatcher/command"
 	"bytes"
-	"mime/multipart"
-	"net/textproto"
-	"fmt"
-	"net/http"
-	"log"
-	"io/ioutil"
 	"encoding/json"
+	"fmt"
+	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
+	"io/ioutil"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"net/textproto"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 	fileName = "file.png"
 	fileExt  = "png"
 	title    = "Load average"
-	channels = "CBYQ32MN3"//TODO move to config
+	channels = "CBYQ32MN3" //TODO move to config
 )
 
 type UploadedFile struct {
