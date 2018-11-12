@@ -39,7 +39,7 @@ func (baseConfig WatcherConfig) Merge(tunedConfig []WatcherConfig) WatcherConfig
 }
 
 func initWatcherConfigs() {
-	for _, watcher := range config.Watchers {
+	for _, watcher := range AppConfig.Watchers {
 		cfg := WatcherConfig{
 			watcher[watcherNameSection].(string),
 			toValidTime(watcher[watcherLoopSection].(float64)),

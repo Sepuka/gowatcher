@@ -9,6 +9,9 @@ OUT_FILE=watcher
 
 all: test
 
+init:
+	dep ensure -v
+
 build: clean
 	$(GOBUILD) \
 	-ldflags "-X main.buildstamp=$(TIMEBUILD) -X main.githash=$(BUILD)" \

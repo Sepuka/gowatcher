@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/services"
+	_ "github.com/sepuka/gowatcher/services"
+	_ "github.com/sepuka/gowatcher/services/logger"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
 	"log"
@@ -40,6 +43,7 @@ var (
 
 func init() {
 	config.InitConfig()
+	services.Build(config.AppConfig)
 	go Transmitter(watcherResult)
 }
 

@@ -18,10 +18,17 @@ const (
 	TextModeMarkdown FormatMode = "markdown"
 	TextModeRaw      FormatMode = "raw"
 	//https://get.slack.help/hc/en-us/articles/202288908-how-can-i-add-formatting-to-my-messages-
-	TextModeSlack FormatMode = "slack"
-	LogLevelDebug    LogLevel = "debug"
-	LogLevelDefault  LogLevel = "default"
+	TextModeSlack   FormatMode = "slack"
+	LogLevelDebug   LogLevel   = "debug"
+	LogLevelDefault LogLevel   = "default"
 )
+
+type Configuration struct {
+	Transports    map[string]interface{}   `id:"transports"`
+	Watchers      []map[string]interface{} `id:"watchers"`
+	KeyValueStore map[string]interface{}   `id:"redis"`
+	Logger        Logger                   `id:"log"`
+}
 
 var (
 	TelegramConfig TransportTelegram
@@ -29,7 +36,7 @@ var (
 	WatchersConfig []WatcherConfig
 	Redis          RedisStore
 	Log            Logger
-	config         configuration
+	AppConfig      Configuration
 )
 
 type TransportTelegram struct {
@@ -54,30 +61,23 @@ type TransportSlack struct {
 }
 
 type Logger struct {
-	Level         LogLevel   `id:"level" default:"default"`
-}
-
-type configuration struct {
-	Transports    map[string]interface{}   `id:"transports"`
-	Watchers      []map[string]interface{} `id:"watchers"`
-	KeyValueStore map[string]interface{}   `id:"redis"`
-	Logger        Logger                   `id:"log"`
+	Level LogLevel `id:"level" default:"default"`
 }
 
 func InitConfig() {
 	readConfig()
 
-	tconf := config.Transports["telegram"].(map[string]interface{})
+	tconf := AppConfig.Transports["telegram"].(map[string]interface{})
 	gonfig.LoadMap(&TelegramConfig, tconf, gonfig.Conf{})
 	TelegramConfig.TextMode = getTextMode(tconf["textMode"].(string))
 
-	sconf := config.Transports["slack"].(map[string]interface{})
+	sconf := AppConfig.Transports["slack"].(map[string]interface{})
 	gonfig.LoadMap(&SlackConfig, sconf, gonfig.Conf{})
 	SlackConfig.TextMode = getTextMode(sconf["textMode"].(string))
 
-	redisAddr := config.KeyValueStore["address"].(string)
-	redisPass := config.KeyValueStore["password"].(string)
-	redisDb, _ := config.KeyValueStore["db"].(float64)
+	redisAddr := AppConfig.KeyValueStore["address"].(string)
+	redisPass := AppConfig.KeyValueStore["password"].(string)
+	redisDb, _ := AppConfig.KeyValueStore["db"].(float64)
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: redisPass,
@@ -85,19 +85,19 @@ func InitConfig() {
 	})
 	Redis = RedisStore{redisClient}
 
-	Log = config.Logger// переписать это все
+	Log = AppConfig.Logger // переписать это все
 
 	initWatcherConfigs()
 }
 
 func readConfig() {
-	err := gonfig.Load(&config, gonfig.Conf{
+	err := gonfig.Load(&AppConfig, gonfig.Conf{
 		FileDefaultFilename: configPath,
 		FileDecoder:         gonfig.DecoderJSON,
 		FlagIgnoreUnknown:   true,
 	})
 	if err != nil {
-		log.Printf("Cannot read config: %v", err)
+		log.Printf("Cannot read AppConfig: %v", err)
 		os.Exit(1)
 	}
 }
