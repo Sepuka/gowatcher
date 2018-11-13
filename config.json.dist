@@ -13,7 +13,6 @@
       "chatId": "",
       "botId": "",
       "token": "",
-      "format": "application/json",
       "silentNotify": true,
       "textMode": "HTML"
     }

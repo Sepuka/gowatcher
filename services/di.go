@@ -5,7 +5,11 @@ import (
 	"github.com/sepuka/gowatcher/config"
 )
 
-const LoggerComponent = "logger"
+const (
+	Logger = "logger"
+	Slack  = "transport.slack"
+	Telegram = "transport.telegram"
+)
 
 var (
 	Container  di.Container
@@ -13,7 +17,7 @@ var (
 )
 
 type (
-	creatorFn func(builder *di.Builder, params config.Configuration) error
+	creatorFn func(builder *di.Builder, cfg config.Configuration) error
 )
 
 func Register(fn creatorFn) {

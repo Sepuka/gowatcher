@@ -2,48 +2,74 @@ package transports
 
 import (
 	"fmt"
-	"github.com/gravitational/log"
+	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/pack"
+	"github.com/sepuka/gowatcher/services"
+	"github.com/stevenroose/gonfig"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 const (
 	telegramPathTemplate = "%v/%v:%v/sendMessage"
-	formatJson           = "application/json"
 )
 
-func SendTelegramMessage(data command.Result, config config.TransportTelegram) (resp *http.Response, err error) {
-	telegramApi := config.Api
-	url := fmt.Sprintf(telegramPathTemplate, telegramApi, config.BotId, config.Token)
-	body := buildRequest(data, config)
+var telegramCfg TelegramConfig
 
-	return http.Post(url, config.Format, body)
+type TelegramConfig struct {
+	Api          string          `id:"Api"`
+	SilentNotify bool            `id:"SilentNotify" default:true`
+	TextMode     pack.FormatMode `id:"TextMode"`
+	ChatId       string          `id:"ChatId"`
+	BotId        string          `id:"BotId"`
+	Token        string          `id:"Token"`
 }
 
-func SendUrgentMessage(data command.Result, config config.TransportTelegram) (resp *http.Response, err error) {
-	urgent := config
-	urgent.SilentNotify = false
-
-	return SendTelegramMessage(data, urgent)
+type Telegram struct {
+	httpClient *http.Client
+	cfg *TelegramConfig
 }
 
-func buildRequest(data command.Result, config config.TransportTelegram) io.Reader {
-	text := pack.FormatText(data, config.TextMode)
+func (obj Telegram) Send(msg command.Result) (resp *http.Response, err error) {
+	url := fmt.Sprintf(telegramPathTemplate, obj.cfg.Api, obj.cfg.BotId, obj.cfg.Token)
+	body := obj.buildRequest(msg)
+
+	return http.Post(url, contentTypeJson, body)
+}
+
+func (obj Telegram) buildRequest(data command.Result) io.Reader {
+	text := pack.FormatText(data, obj.cfg.TextMode)
 	d := map[string]interface{}{
-		"chat_id":              config.ChatId,
+		"chat_id":              obj.cfg.ChatId,
 		"text":                 text,
-		"disable_notification": config.IsSilentNotify(),
-		"parse_mode":           config.TextMode,
+		"disable_notification": obj.isSilentNotify(),
+		"parse_mode":           obj.cfg.TextMode,
 	}
 
-	switch config.Format {
-	case formatJson:
-		return pack.Encode(d)
-	default:
-		log.Errorf("Unknown telegram buildRequest %v!", config.Format)
-		panic("Bad telegram buildRequest")
-	}
+	return pack.Encode(d)
+}
+
+func (obj Telegram) isSilentNotify() string {
+	return strconv.FormatBool(obj.cfg.SilentNotify)
+}
+
+func init() {
+	services.Register(func(builder *di.Builder, params config.Configuration) error {
+		cfg := params.Transports["telegram"].(map[string]interface{})
+		gonfig.LoadMap(&telegramCfg, cfg, gonfig.Conf{})
+		telegramCfg.TextMode = pack.GetTextMode(cfg["textMode"].(string))
+
+		return builder.Add(di.Def{
+			Name: services.Telegram,
+			Build: func(ctn di.Container) (interface{}, error) {
+				return &Telegram{
+					&http.Client{},
+					&telegramCfg,
+				}, nil
+			},
+		})
+	})
 }

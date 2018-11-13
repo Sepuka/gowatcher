@@ -3,33 +3,43 @@ package pack
 import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
-	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/env"
+	"strings"
 )
 
-func FormatText(data command.Result, mode config.FormatMode) string {
+type FormatMode string
+
+const (
+	TextModeHTML     FormatMode = "html"
+	TextModeMarkdown FormatMode = "markdown"
+	TextModeRaw      FormatMode = "raw"
+	//https://get.slack.help/hc/en-us/articles/202288908-how-can-i-add-formatting-to-my-messages-
+	TextModeSlack    FormatMode = "slack"
+)
+
+func FormatText(data command.Result, mode FormatMode) string {
 	host := env.GetCurrentHost()
 
 	switch mode {
-	case config.TextModeHTML:
+	case TextModeHTML:
 		return fmt.Sprintf(
 			"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
 			host,
 			data.GetName(),
 			data.GetContent())
-	case config.TextModeSlack:
+	case TextModeSlack:
 		return fmt.Sprintf(
 			"*%v* *%v* says: ```%s```",
 			host,
 			data.GetName(),
 			data.GetContent())
-	case config.TextModeMarkdown:
+	case TextModeMarkdown:
 		return fmt.Sprintf(
 			"%v *%v* says:\n ```%s```",
 			host,
 			data.GetName(),
 			data.GetContent())
-	case config.TextModeRaw:
+	case TextModeRaw:
 		return fmt.Sprintf(
 			"%v %v says: %s",
 			host,
@@ -37,5 +47,18 @@ func FormatText(data command.Result, mode config.FormatMode) string {
 			data.GetContent())
 	default:
 		panic("Unknown format " + mode)
+	}
+}
+
+func GetTextMode(mode string) FormatMode {
+	switch strings.ToLower(mode) {
+	case "html":
+		return TextModeHTML
+	case "markdown":
+		return TextModeMarkdown
+	case "slack":
+		return TextModeSlack
+	default:
+		return TextModeRaw
 	}
 }

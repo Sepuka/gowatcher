@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
-	"github.com/sepuka/gowatcher/config"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
@@ -40,18 +39,26 @@ type FilesUploadAPIResponse struct {
 	File  UploadedFile `json:"file"`
 }
 
-func sendImg(httpClient *http.Client, msg command.Result, cfg config.TransportSlack) {
+func sendImg(httpClient *http.Client, msg command.Result, cfg *slackConfig) (resp *http.Response, err error) {
 	request, err := buildImgRequest(msg, cfg.FileUploadUrl, cfg.Token)
 	if err != nil {
 		log.Println("Build slack request failed: ", err)
 	}
 
-	resp, _ := httpClient.Do(request)
+	resp, err = httpClient.Do(request)
+
+	if err != nil {
+		log.Printf("Slack img request failure %s\n.\nRequest %s\nResponse %s", err, request, resp)
+		return nil, err
+	}
+
 	body, _ := ioutil.ReadAll(resp.Body)
 	res := new(FilesUploadAPIResponse)
 	_ = json.Unmarshal(body, res)
 
 	defer resp.Body.Close()
+
+	return resp, err
 }
 
 func buildImgRequest(msg command.Result, url string, token string) (*http.Request, error) {
@@ -67,7 +74,7 @@ func buildImgRequest(msg command.Result, url string, token string) (*http.Reques
 	writer.WriteField("fileName", fileName)
 	writer.WriteField("filetype", fileExt)
 	writer.WriteField("channels", channels)
-	writer.WriteField("token", token)
+	writer.WriteField("Token", token)
 
 	req, _ := http.NewRequest("POST", url, buf)
 	req.Header.Set("Content-Type", writer.FormDataContentType())

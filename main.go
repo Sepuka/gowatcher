@@ -6,11 +6,9 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/services"
-	_ "github.com/sepuka/gowatcher/services"
-	_ "github.com/sepuka/gowatcher/services/logger"
+	"github.com/sepuka/gowatcher/services/logger"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
-	"log"
 	"os"
 	"syscall"
 	"time"
@@ -39,12 +37,15 @@ var (
 		Umask:       027,
 		Args:        []string{daemonName},
 	}
+	log *logger.Logger
 )
+
 
 func init() {
 	config.InitConfig()
 	services.Build(config.AppConfig)
-	go Transmitter(watcherResult)
+	log = services.Container.Get(services.Logger).(*logger.Logger)
+	go transmitter(watcherResult)
 }
 
 func main() {
@@ -77,14 +78,14 @@ func main() {
 	if !daemon.WasReborn() && !*daemonize {
 		watchers.RunWatchers(watcherResult)
 		watchers.RunStatCollectors(watcherResult)
-		log.Println("Press <Ctrl>+C to exit")
+		log.Log("Press <Ctrl>+C to exit")
 		daemonLoop()
 		return
 	}
 
 	child, err := cntxt.Reborn()
 	if err != nil {
-		log.Fatal("Unable to run: ", err)
+		log.Fatalf("Unable to run: ", err)
 	}
 	if child != nil {
 		return
@@ -92,7 +93,7 @@ func main() {
 		defer cntxt.Release()
 	}
 
-	log.Println("watcher daemon started")
+	log.Log("watcher daemon started")
 
 	watchers.RunWatchers(watcherResult)
 	watchers.RunStatCollectors(watcherResult)
@@ -101,9 +102,9 @@ func main() {
 
 	err = daemon.ServeSignals()
 	if err != nil {
-		log.Println("Error:", err)
+		log.Debugf("Error: %s", err)
 	}
-	log.Println("daemon terminated.")
+	log.Log("daemon terminated.")
 }
 
 func isDaemonFlagsPresent() bool {
@@ -121,7 +122,7 @@ func daemonLoop() {
 }
 
 func termHandler(sig os.Signal) error {
-	log.Println("terminating...")
+	log.Log("terminating...")
 	stop <- struct{}{}
 	if sig == syscall.SIGQUIT {
 		<-done
