@@ -45,6 +45,6 @@
     "db": 0
   },
   "log": {
-       "level": "debug|default"
+       "level": "trace|debug|info|warning|error|fatal|panic"
      }
 }

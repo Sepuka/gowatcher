@@ -7,12 +7,8 @@ import (
 	"os"
 )
 
-type LogLevel string
-
 const (
 	configPath                  = "./config.json"
-	LogLevelDebug   LogLevel   = "debug"
-	LogLevelDefault LogLevel   = "default"
 )
 
 type Configuration struct {
@@ -30,7 +26,7 @@ var (
 )
 
 type Logger struct {
-	Level LogLevel `id:"level" default:"default"`
+	Level string `id:"level" default:"default"`
 }
 
 func InitConfig() {

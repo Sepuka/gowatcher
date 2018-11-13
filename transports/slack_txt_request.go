@@ -4,13 +4,13 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/pack"
 	"github.com/sepuka/gowatcher/services"
-	"github.com/sepuka/gowatcher/services/logger"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 )
 
 func sendText(httpClient *http.Client, msg command.Result, url string, format pack.FormatMode) (resp *http.Response, err error) {
-	log := services.Container.Get(services.Logger).(*logger.Logger)
+	log := services.Container.Get(services.Logger).(*logrus.Logger)
 	d := map[string]interface{}{
 		"text": pack.FormatText(msg, format),
 	}
