@@ -9,6 +9,7 @@ const (
 	Logger = "logger"
 	Slack  = "transport.slack"
 	Telegram = "transport.telegram"
+	Transports = "transport.all"
 )
 
 var (

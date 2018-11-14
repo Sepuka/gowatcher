@@ -7,6 +7,7 @@ import (
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/pack"
 	"github.com/sepuka/gowatcher/services"
+	"github.com/sirupsen/logrus"
 	"github.com/stevenroose/gonfig"
 	"io"
 	"net/http"
@@ -31,6 +32,7 @@ type TelegramConfig struct {
 type Telegram struct {
 	httpClient *http.Client
 	cfg *TelegramConfig
+	logger logrus.StdLogger
 }
 
 func (obj Telegram) Send(msg command.Result) (resp *http.Response, err error) {
@@ -68,6 +70,7 @@ func init() {
 				return &Telegram{
 					&http.Client{},
 					&telegramCfg,
+					services.Container.Get(services.Logger).(*logrus.Logger),
 				}, nil
 			},
 		})

@@ -6,6 +6,7 @@ import (
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/pack"
 	"github.com/sepuka/gowatcher/services"
+	"github.com/sirupsen/logrus"
 	"github.com/stevenroose/gonfig"
 	"net/http"
 	"log"
@@ -23,6 +24,7 @@ type slackConfig struct {
 type Slack struct {
 	httpClient *http.Client
 	cfg *slackConfig
+	logger logrus.StdLogger
 }
 
 func (obj Slack) Send(msg command.Result) (resp *http.Response, err error) {
@@ -42,8 +44,7 @@ func init() {
 			log.Fatalf("Cannot instantiate slack configuration: %v", err)
 			return err
 		}
-		log.Print(cfg)
-		log.Print(slackCfg)
+
 		slackCfg.TextMode = pack.GetTextMode(cfg["textMode"].(string))
 
 		return builder.Add(di.Def{
@@ -52,9 +53,9 @@ func init() {
 				return &Slack{
 					&http.Client{},
 					&slackCfg,
+					services.Container.Get(services.Logger).(*logrus.Logger),
 				}, nil
 			},
 		})
 	})
 }
-

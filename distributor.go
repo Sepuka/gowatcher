@@ -11,17 +11,8 @@ func transmitter(c <-chan command.Result) {
 		msg := <-c
 
 		log.Debugf("Sending '%s':'%s' message.", msg.GetName(), msg.GetType())
-		go sendToTelegram(msg)
-		go sendToSlack(msg)
+		for _, distributor := range services.Container.Get(services.Transports).([]transports.Transport) {
+			go distributor.Send(msg)
+		}
 	}
-}
-
-func sendToTelegram(msg command.Result) {
-	telegram := services.Container.Get(services.Telegram).(*transports.Telegram)
-	telegram.Send(msg)
-}
-
-func sendToSlack(msg command.Result) {
-	slack := services.Container.Get(services.Slack).(*transports.Slack)
-	slack.Send(msg)
 }
