@@ -8,8 +8,8 @@ import (
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sirupsen/logrus"
 	"github.com/stevenroose/gonfig"
-	"net/http"
 	"log"
+	"net/http"
 )
 
 var slackCfg slackConfig
@@ -23,8 +23,8 @@ type slackConfig struct {
 
 type Slack struct {
 	httpClient *http.Client
-	cfg *slackConfig
-	logger logrus.StdLogger
+	cfg        *slackConfig
+	logger     logrus.StdLogger
 }
 
 func (obj Slack) Send(msg command.Result) (resp *http.Response, err error) {

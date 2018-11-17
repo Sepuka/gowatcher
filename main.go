@@ -6,8 +6,8 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/services"
-	"github.com/sepuka/gowatcher/watchers"
 	_ "github.com/sepuka/gowatcher/services/logger"
+	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -40,7 +40,6 @@ var (
 	}
 	log *logrus.Logger
 )
-
 
 func init() {
 	config.InitConfig()

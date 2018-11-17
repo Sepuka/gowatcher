@@ -5,6 +5,8 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/command/graph"
 	"github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/services"
+	"github.com/sepuka/gowatcher/services/store"
 	"github.com/sepuka/gowatcher/stats"
 )
 
@@ -41,7 +43,7 @@ func RunWatchers(c chan<- command.Result) {
 }
 
 func RunStatCollectors(c chan<- command.Result) {
-	go stats.LoadAverage(c, config.Redis)
+	go stats.LoadAverage(c, services.Container.Get(services.KeyValue).(*store.RedisStore))
 }
 
 func start(c chan<- command.Result, config config.WatcherConfig, f func(chan<- command.Result, config.WatcherConfig)) {

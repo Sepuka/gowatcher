@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/parsers"
-	"log"
+	"github.com/sepuka/gowatcher/services"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -32,13 +33,15 @@ func LoadAverage(c chan<- command.Result, writer ListStoreWriter) {
 	handler := &laResultHandler{
 		c,
 		writer,
+		services.Container.Get(services.Logger).(logrus.FieldLogger),
 	}
 	command.ReadFileLoop(loadAvgPath, loadAvgLoopTime, handler)
 }
 
 type laResultHandler struct {
-	c     chan<- command.Result
-	store ListStoreWriter
+	c      chan<- command.Result
+	store  ListStoreWriter
+	logger logrus.FieldLogger
 }
 
 func (handler laResultHandler) Handle(result command.Result) {
@@ -47,7 +50,7 @@ func (handler laResultHandler) Handle(result command.Result) {
 
 	if err != nil {
 		errMsg := fmt.Sprint("Statistics save error: loadavg cannot write key '", LoadAvgKeyName, "', error: ", err)
-		log.Println(errMsg)
+		handler.logger.Error(errMsg)
 		handler.c <- command.NewResult("Load average statistics worker", errMsg, nil)
 	}
 

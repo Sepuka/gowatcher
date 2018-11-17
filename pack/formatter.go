@@ -14,7 +14,7 @@ const (
 	TextModeMarkdown FormatMode = "markdown"
 	TextModeRaw      FormatMode = "raw"
 	//https://get.slack.help/hc/en-us/articles/202288908-how-can-i-add-formatting-to-my-messages-
-	TextModeSlack    FormatMode = "slack"
+	TextModeSlack FormatMode = "slack"
 )
 
 func FormatText(data command.Result, mode FormatMode) string {

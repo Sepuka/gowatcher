@@ -31,8 +31,8 @@ type TelegramConfig struct {
 
 type Telegram struct {
 	httpClient *http.Client
-	cfg *TelegramConfig
-	logger logrus.StdLogger
+	cfg        *TelegramConfig
+	logger     logrus.StdLogger
 }
 
 func (obj Telegram) Send(msg command.Result) (resp *http.Response, err error) {

@@ -5,6 +5,8 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/parsers"
+	"github.com/sepuka/gowatcher/services"
+	"github.com/sepuka/gowatcher/services/store"
 	"github.com/sepuka/gowatcher/stats"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -21,7 +23,7 @@ const (
 )
 
 func LoadAvgGraph(c chan<- command.Result, cfg config.WatcherConfig) {
-	data := getPlotData(config.Redis)
+	data := getPlotData(services.Container.Get(services.KeyValue).(*store.RedisStore))
 	if len(data) > 0 {
 		c <- buildImg(data)
 	} else {
