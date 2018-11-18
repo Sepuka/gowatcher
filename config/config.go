@@ -4,6 +4,7 @@ import (
 	"github.com/stevenroose/gonfig"
 	"log"
 	"os"
+	"time"
 )
 
 const (
@@ -16,26 +17,37 @@ type Logger struct {
 
 type KeyValue struct {
 	Host     string `id:"host" default:"localhost"`
-	Port     int16  `id:"port" default:6379`
+	Port     int16  `id:"port" default:"6379"`
 	Password string `id:"password" default:""`
-	Db       int    `id:"db" default:0`
+	Db       int    `id:"db" default:"0"`
+}
+
+type WatcherConfig struct {
+	Name string        `id:"name"`
+	Loop time.Duration `id:"loop" default:"86400"`
+}
+
+func (setting WatcherConfig) GetName() string {
+	return setting.Name
+}
+
+func (setting WatcherConfig) GetLoop() time.Duration {
+	return setting.Loop * time.Second
 }
 
 type Configuration struct {
-	Transports    map[string]interface{}   `id:"transports"`
-	Watchers      []map[string]interface{} `id:"watchers"`
-	KeyValueStore KeyValue                 `id:"redis"`
-	Logger        Logger                   `id:"log"`
+	Transports    map[string]interface{} `id:"transports"`
+	Watchers      []WatcherConfig        `id:"watchers"`
+	KeyValueStore KeyValue               `id:"redis"`
+	Logger        Logger                 `id:"log"`
 }
 
 var (
-	WatchersConfig []WatcherConfig
-	AppConfig      Configuration
+	AppConfig Configuration
 )
 
 func InitConfig() {
 	readConfig()
-	initWatcherConfigs()
 }
 
 func readConfig() {

@@ -19,13 +19,6 @@ const (
 )
 
 var (
-	baseConfigs = []config.WatcherConfig{
-		*config.NewWatcherConfig(diskFreeAgentName, DfLoopInterval),
-		*config.NewWatcherConfig(upTimeAgentName, UptimeLoopInterval),
-		*config.NewWatcherConfig(whoAgentName, WhoLoopInterval),
-		*config.NewWatcherConfig(wAgentName, WLoopInterval),
-		*config.NewWatcherConfig(laAgentName, graph.LaGraphLoop),
-	}
 	agents = map[string]func(chan<- command.Result, config.WatcherConfig){
 		diskFreeAgentName: DiskFree,
 		upTimeAgentName:   Uptime,
@@ -36,9 +29,8 @@ var (
 )
 
 func RunWatchers(c chan<- command.Result) {
-	for _, baseConfig := range baseConfigs {
-		preparedConfig := baseConfig.Merge(config.WatchersConfig)
-		start(c, preparedConfig, getAgent(baseConfig.GetName()))
+	for _, cfg := range config.AppConfig.Watchers {
+		start(c, cfg, getAgent(cfg.GetName()))
 	}
 }
 

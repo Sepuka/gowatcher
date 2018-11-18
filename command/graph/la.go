@@ -12,11 +12,9 @@ import (
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
-	"time"
 )
 
 const (
-	LaGraphLoop = time.Second * 10
 	title       = "Load average"
 	labelXTitle = "avg per 1 min"
 	watcherName = "LoadAverage"

@@ -3,12 +3,10 @@ package watchers
 import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	"time"
 )
 
 const (
-	whoCommand      = "who"
-	WhoLoopInterval = time.Second * 2
+	whoCommand = "who"
 )
 
 func Who(c chan<- command.Result, config config.WatcherConfig) {
