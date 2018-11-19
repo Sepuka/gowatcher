@@ -55,7 +55,7 @@ func makePlot() *plot.Plot {
 	return plt
 }
 
-func getPlotData(reader stats.ListStoreReader) plotter.XYs {
+func getPlotData(reader stats.SliceStoreReader) plotter.XYs {
 	data := reader.List(stats.LoadAvgKeyName)
 	cnt := len(data)
 	xYs := make(plotter.XYs, cnt)

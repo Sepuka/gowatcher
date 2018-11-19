@@ -8,6 +8,7 @@ import (
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/services/store"
 	"github.com/sepuka/gowatcher/stats"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -30,7 +31,15 @@ var (
 
 func RunWatchers(c chan<- command.Result) {
 	for _, cfg := range config.AppConfig.Watchers {
-		start(c, cfg, getAgent(cfg.GetName()))
+		fnc, err := getAgent(cfg.GetName())
+
+		if err != nil {
+			log := services.Container.Get(services.Logger).(logrus.FieldLogger)
+			log.Error(err)
+			continue
+		}
+
+		go fnc(c, cfg)
 	}
 }
 
@@ -38,13 +47,10 @@ func RunStatCollectors(c chan<- command.Result) {
 	go stats.LoadAverage(c, services.Container.Get(services.KeyValue).(*store.RedisStore))
 }
 
-func start(c chan<- command.Result, config config.WatcherConfig, f func(chan<- command.Result, config.WatcherConfig)) {
-	go f(c, config)
-}
-
-func getAgent(agentName string) func(chan<- command.Result, config.WatcherConfig) {
+func getAgent(agentName string) (func(chan<- command.Result, config.WatcherConfig), error) {
 	if agent, ok := agents[agentName]; ok {
-		return agent
+		return agent, nil
 	}
-	panic(fmt.Sprint("Unknown watcher name ", agentName))
+
+	return nil, fmt.Errorf("invalid agent name %s", agentName)
 }

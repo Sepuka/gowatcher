@@ -29,7 +29,7 @@ var (
 	loadAvgKeysCount = int(loadAvgHistoryPeriod.Seconds() / loadAvgLoopTime.Seconds())
 )
 
-func LoadAverage(c chan<- command.Result, writer ListStoreWriter) {
+func LoadAverage(c chan<- command.Result, writer SliceStoreWriter) {
 	handler := &laResultHandler{
 		c,
 		writer,
@@ -40,7 +40,7 @@ func LoadAverage(c chan<- command.Result, writer ListStoreWriter) {
 
 type laResultHandler struct {
 	c      chan<- command.Result
-	store  ListStoreWriter
+	store  SliceStoreWriter
 	logger logrus.FieldLogger
 }
 
@@ -71,6 +71,6 @@ func parse(result string) loadAverageSnapshot {
 	}
 }
 
-func deleteOldKeys(stack ListStoreWriter) {
+func deleteOldKeys(stack SliceStoreWriter) {
 	stack.Trim(LoadAvgKeyName, loadAvgKeysCount)
 }

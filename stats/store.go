@@ -1,10 +1,10 @@
 package stats
 
-type ListStoreReader interface {
+type SliceStoreReader interface {
 	List(key string) []string
 }
 
-type ListStoreWriter interface {
+type SliceStoreWriter interface {
 	Push(key string, value interface{}) error
 	Trim(key string, cnt int)
 }
