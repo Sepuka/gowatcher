@@ -25,7 +25,7 @@ func init() {
 					Hooks:        make(logrus.LevelHooks),
 					Level:        LogLevel,
 					ExitFunc:     os.Exit,
-					ReportCaller: false,
+					ReportCaller: cfg.Logger.WithCaller,
 				}, nil
 			},
 		})

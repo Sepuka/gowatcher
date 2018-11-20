@@ -12,7 +12,10 @@ const (
 	contentTypeJson = "application/json"
 )
 
+type TransportName string
+
 type Transport interface {
+	GetName() TransportName
 	Send(msg command.Result) (resp *http.Response, err error)
 }
 

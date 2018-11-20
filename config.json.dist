@@ -46,6 +46,7 @@
     "db": 0
   },
   "log": {
-       "level": "trace|debug|info|warning|error|fatal|panic"
+       "level": "trace|debug|info|warning|error|fatal|panic",
+       "withCaller": false
      }
 }

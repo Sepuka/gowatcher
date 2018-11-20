@@ -12,6 +12,8 @@ import (
 	"net/http"
 )
 
+const transportSlackName TransportName = "slack"
+
 var slackCfg slackConfig
 
 type slackConfig struct {
@@ -34,6 +36,10 @@ func (obj Slack) Send(msg command.Result) (resp *http.Response, err error) {
 	default:
 		return sendText(obj.httpClient, msg, obj.cfg.Api, obj.cfg.TextMode)
 	}
+}
+
+func (obj Slack) GetName() TransportName {
+	return transportSlackName
 }
 
 func init() {

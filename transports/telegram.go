@@ -16,6 +16,7 @@ import (
 
 const (
 	telegramPathTemplate = "%v/%v:%v/sendMessage"
+	transportTelegramName TransportName = "telegramm"
 )
 
 var telegramCfg TelegramConfig
@@ -40,6 +41,10 @@ func (obj Telegram) Send(msg command.Result) (resp *http.Response, err error) {
 	body := obj.buildRequest(msg)
 
 	return http.Post(url, contentTypeJson, body)
+}
+
+func (obj Telegram) GetName() TransportName {
+	return transportTelegramName
 }
 
 func (obj Telegram) buildRequest(data command.Result) io.Reader {
