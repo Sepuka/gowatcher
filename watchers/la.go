@@ -1,9 +1,8 @@
-package graph
+package watchers
 
 import (
 	"bytes"
 	"github.com/sepuka/gowatcher/command"
-	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/parsers"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/services/store"
@@ -20,8 +19,17 @@ const (
 	watcherName = "LoadAverage"
 )
 
-func LoadAvgGraph(c chan<- command.Result, cfg config.WatcherConfig) {
+type loadAvgGraph struct {
+
+}
+
+var (
+	la = &loadAvgGraph{}
+)
+
+func (obj loadAvgGraph) exec() {
 	data := getPlotData(services.Container.Get(services.KeyValue).(*store.RedisStore))
+	c := services.Container.Get(services.TransportChan).(chan command.Result)
 	if len(data) > 0 {
 		c <- buildImg(data)
 	} else {

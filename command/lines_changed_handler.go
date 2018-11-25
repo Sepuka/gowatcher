@@ -3,16 +3,20 @@ package command
 import (
 	"fmt"
 	"github.com/sepuka/gowatcher/parsers"
+	"github.com/sepuka/gowatcher/services"
 )
 
 type LinesChangedResultHandler struct {
-	c     chan<- Result
+	c     chan Result
 	users []string
 }
 
 // Send msg to chan if it detect new lines of watcher's output
-func NewLinesChangedResultHandler(c chan<- Result) ResultHandler {
-	return &LinesChangedResultHandler{c, []string{}}
+func NewLinesChangedResultHandler() ResultHandler {
+	return &LinesChangedResultHandler{
+		services.Container.Get(services.TransportChan).(chan Result),
+		[]string{},
+	}
 }
 
 func (handler *LinesChangedResultHandler) Handle(raw Result) {

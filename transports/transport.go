@@ -31,4 +31,12 @@ func init() {
 			},
 		})
 	})
+	services.Register(func(builder *di.Builder, params config.Configuration) error {
+		return builder.Add(di.Def{
+			Name: services.TransportChan,
+			Build: func(ctn di.Container) (interface{}, error) {
+				return make(chan command.Result), nil
+			},
+		})
+	})
 }

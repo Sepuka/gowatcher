@@ -3,6 +3,7 @@ package command
 import (
 	"bytes"
 	"fmt"
+	"github.com/sepuka/gowatcher/services"
 	"regexp"
 	"strings"
 )
@@ -10,10 +11,12 @@ import (
 const outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
 
 type DfFormatResultHandler struct {
-	c chan<- Result
+	c chan Result
 }
 
-func NewDfFormatResultHandler(c chan<- Result) ResultHandler {
+func NewDfFormatResultHandler() ResultHandler {
+	c := services.Container.Get(services.TransportChan).(chan Result)
+
 	return DfFormatResultHandler{c}
 }
 

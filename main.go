@@ -13,6 +13,7 @@ import (
 	"os"
 	"syscall"
 	"time"
+	_ "github.com/sepuka/gowatcher/config"
 )
 
 const (
@@ -24,7 +25,8 @@ var (
 	githash       = "githash not present"
 	stop          = make(chan struct{})
 	done          = make(chan struct{})
-	watcherResult = make(chan command.Result)
+	watcherResult chan command.Result
+	log  logrus.FieldLogger
 	signal        = flag.String("s", "", "send signal to the daemon\nstop - to stop daemon")
 	daemonize     = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode      = flag.Bool("t", false, "Test mode")
@@ -38,17 +40,17 @@ var (
 		Umask:       027,
 		Args:        []string{daemonName},
 	}
-	log *logrus.Logger
 )
 
 func init() {
-	config.InitConfig()
 	services.Build(config.AppConfig)
+	watcherResult = services.Container.Get(services.TransportChan).(chan command.Result)
 	log = services.Container.Get(services.Logger).(*logrus.Logger)
-	go transmitter(watcherResult)
 }
 
 func main() {
+	go transmitter()
+
 	flag.Parse()
 	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
 
@@ -76,8 +78,8 @@ func main() {
 	}
 
 	if !daemon.WasReborn() && !*daemonize {
-		watchers.RunWatchers(watcherResult)
-		watchers.RunStatCollectors(watcherResult)
+		watchers.RunWatchers()
+		watchers.RunStatCollectors()
 		log.Info("Press <Ctrl>+C to exit")
 		daemonLoop()
 		return
@@ -95,8 +97,8 @@ func main() {
 
 	log.Info("watcher daemon started")
 
-	watchers.RunWatchers(watcherResult)
-	watchers.RunStatCollectors(watcherResult)
+	watchers.RunWatchers()
+	watchers.RunStatCollectors()
 
 	go daemonLoop()
 

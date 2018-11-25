@@ -3,14 +3,31 @@ package watchers
 import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
+	"time"
 )
 
 const (
 	diskFreeCommand = "df"
 )
 
-func DiskFree(c chan<- command.Result, config config.WatcherConfig) {
-	cmd := command.NewCmd(diskFreeCommand, []string{"-hl", "--type=ext4", "--type=ext2", "--type=vfat"})
-	resultHandler := command.NewDfFormatResultHandler(c)
-	command.RunCmdLoop(cmd, config.GetLoop(), resultHandler)
+// report file system disk space usage
+type dfWatcher struct {
+	command command.Command
+	loop time.Duration
+}
+
+var (
+	dfConfig = config.GetWatcherConfig(diskFreeAgentName)
+	df = &dfWatcher{
+		&command.Cmd{
+			Cmd: diskFreeCommand,
+			Args: dfConfig.Args,
+		},
+		dfConfig.GetLoop(),
+	}
+)
+
+func (obj dfWatcher) exec() {
+	handler := command.NewDfFormatResultHandler()
+	command.RunCmdLoop(obj.command, obj.loop, handler)
 }

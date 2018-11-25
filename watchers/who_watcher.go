@@ -3,14 +3,32 @@ package watchers
 import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
+	"time"
 )
 
 const (
 	whoCommand = "who"
 )
 
-func Who(c chan<- command.Result, config config.WatcherConfig) {
-	cmd := command.NewCmd(whoCommand, []string{"-u"}) // with PID
-	resultHandler := command.NewLinesChangedResultHandler(c)
-	command.RunCmdLoop(cmd, config.GetLoop(), resultHandler)
+var (
+	whoConfig = config.GetWatcherConfig(whoAgentName)
+	who = &whoWatcher{
+		&command.Cmd{
+			Cmd: whoCommand,
+			Args: whoConfig.Args,
+			Env: []string{"lang=en_EN"},
+		},
+		whoConfig.GetLoop(),
+	}
+)
+
+// show who is logged on
+type whoWatcher struct {
+	command command.Command
+	loop time.Duration
+}
+
+func (obj whoWatcher) exec() {
+	handler := command.NewLinesChangedResultHandler()
+	command.RunCmdLoop(obj.command, obj.loop, handler)
 }

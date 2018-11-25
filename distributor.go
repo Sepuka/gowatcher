@@ -7,7 +7,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func transmitter(c <-chan command.Result) {
+func transmitter() {
+	c := services.Container.Get(services.TransportChan).(chan command.Result)
+
 	for {
 		msg := <-c
 

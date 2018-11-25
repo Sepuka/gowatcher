@@ -29,9 +29,9 @@ var (
 	loadAvgKeysCount = int(loadAvgHistoryPeriod.Seconds() / loadAvgLoopTime.Seconds())
 )
 
-func LoadAverage(c chan<- command.Result, writer SliceStoreWriter) {
+func LoadAverage(writer SliceStoreWriter) {
 	handler := &laResultHandler{
-		c,
+		services.Container.Get(services.TransportChan).(chan command.Result),
 		writer,
 		services.Container.Get(services.Logger).(logrus.FieldLogger),
 	}

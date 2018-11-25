@@ -3,6 +3,7 @@ package command
 import (
 	"bytes"
 	"os/exec"
+	"strings"
 )
 
 type ContentType string
@@ -49,24 +50,21 @@ func (r Result) GetType() ContentType {
 
 type Command interface {
 	Command() string
-	Args() []string
+	GetArgs() []string
 }
 
 type Cmd struct {
-	cmd  string
-	args []string
-}
-
-func NewCmd(cmd string, args []string) Command {
-	return Cmd{cmd, args}
+	Cmd       string
+	Args string
+	Env []string
 }
 
 func (c Cmd) Command() string {
-	return c.cmd
+	return c.Cmd
 }
 
-func (c Cmd) Args() []string {
-	return c.args
+func (c Cmd) GetArgs() []string {
+	return strings.Split(c.Args, " ")
 }
 
 func Run(command Command) Result {
@@ -79,7 +77,7 @@ func Run(command Command) Result {
 }
 
 func execute(command Command) (string, error) {
-	cmd := exec.Command(command.Command(), command.Args()...)
+	cmd := exec.Command(command.Command(), command.GetArgs()...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()

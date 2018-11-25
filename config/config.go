@@ -26,6 +26,7 @@ type KeyValue struct {
 type WatcherConfig struct {
 	Name string        `id:"name"`
 	Loop time.Duration `id:"loop" default:"86400"`
+	Args string `id:"args"`
 }
 
 func (setting WatcherConfig) GetName() string {
@@ -43,14 +44,23 @@ type Configuration struct {
 	Logger        Logger                 `id:"log"`
 }
 
+func GetWatcherConfig(watcherName string) WatcherConfig {
+	for _, cfg := range AppConfig.Watchers {
+		if cfg.GetName() == watcherName {
+			return cfg
+		}
+	}
+
+	panic("Cannot find watcher config " + watcherName)
+}
+
 var (
 	AppConfig Configuration
 )
 
-func InitConfig() {
+func init()  {
 	readConfig()
 }
-
 func readConfig() {
 	err := gonfig.Load(&AppConfig, gonfig.Conf{
 		FileDefaultFilename: configPath,

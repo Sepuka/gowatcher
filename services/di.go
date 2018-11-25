@@ -10,6 +10,7 @@ const (
 	Slack      = "transport.slack"
 	Telegram   = "transport.telegram"
 	Transports = "transport.all"
+	TransportChan = "transport.chan"
 	KeyValue   = "store.key_value"
 )
 
