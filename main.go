@@ -34,8 +34,6 @@ var (
 	cntxt         = &daemon.Context{
 		PidFileName: "pid",
 		PidFilePerm: 0644,
-		LogFileName: "log",
-		LogFilePerm: 0640,
 		WorkDir:     "./",
 		Umask:       027,
 		Args:        []string{daemonName},

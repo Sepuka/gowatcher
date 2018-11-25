@@ -47,6 +47,7 @@
   },
   "log": {
        "level": "trace|debug|info|warning|error|fatal|panic",
-       "withCaller": false
+       "withCaller": false,
+       "file": "log"
      }
 }

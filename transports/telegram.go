@@ -16,7 +16,7 @@ import (
 
 const (
 	telegramPathTemplate                = "%v/%v:%v/sendMessage"
-	transportTelegramName TransportName = "telegramm"
+	transportTelegramName TransportName = "telegram"
 )
 
 var telegramCfg TelegramConfig

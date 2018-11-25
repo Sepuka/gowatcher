@@ -14,6 +14,7 @@ const (
 type Logger struct {
 	Level      string `id:"level" default:"info"`
 	WithCaller bool   `id:"withCaller" default:"false"`
+	File       string `id:"file" default:"log"`
 }
 
 type KeyValue struct {
