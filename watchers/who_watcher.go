@@ -10,23 +10,19 @@ const (
 	whoCommand = "who"
 )
 
+// show who is logged on
+type whoWatcher struct {
+	command *command.Cmd
+	loop    time.Duration
+}
+
 var (
 	whoConfig = config.GetWatcherConfig(whoAgentName)
-	who = &whoWatcher{
-		&command.Cmd{
-			Cmd: whoCommand,
-			Args: whoConfig.Args,
-			Env: []string{"lang=en_EN"},
-		},
+	who       = &whoWatcher{
+		command.NewEnvedCmd(whoCommand, utConfig.Args, "lang=en_EN"),
 		whoConfig.GetLoop(),
 	}
 )
-
-// show who is logged on
-type whoWatcher struct {
-	command command.Command
-	loop time.Duration
-}
 
 func (obj whoWatcher) exec() {
 	handler := command.NewLinesChangedResultHandler()

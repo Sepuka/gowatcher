@@ -12,8 +12,8 @@ const (
 )
 
 type Logger struct {
-	Level string `id:"level" default:"info"`
-	WithCaller bool `id:"withCaller" default:"false"`
+	Level      string `id:"level" default:"info"`
+	WithCaller bool   `id:"withCaller" default:"false"`
 }
 
 type KeyValue struct {
@@ -26,7 +26,7 @@ type KeyValue struct {
 type WatcherConfig struct {
 	Name string        `id:"name"`
 	Loop time.Duration `id:"loop" default:"86400"`
-	Args string `id:"args"`
+	Args string        `id:"args"`
 }
 
 func (setting WatcherConfig) GetName() string {
@@ -58,7 +58,7 @@ var (
 	AppConfig Configuration
 )
 
-func init()  {
+func init() {
 	readConfig()
 }
 func readConfig() {

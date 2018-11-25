@@ -20,7 +20,6 @@ const (
 )
 
 type loadAvgGraph struct {
-
 }
 
 var (

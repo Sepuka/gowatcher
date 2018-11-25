@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	Logger     = "logger"
-	Slack      = "transport.slack"
-	Telegram   = "transport.telegram"
-	Transports = "transport.all"
+	Logger        = "logger"
+	Slack         = "transport.slack"
+	Telegram      = "transport.telegram"
+	Transports    = "transport.all"
 	TransportChan = "transport.chan"
-	KeyValue   = "store.key_value"
+	KeyValue      = "store.key_value"
 )
 
 var (

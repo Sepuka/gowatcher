@@ -21,10 +21,10 @@ type executive interface {
 var (
 	workers = map[string]executive{
 		diskFreeCommand: df,
-		whoCommand: who,
-		wCommand: w,
-		uptimeCommand: ut,
-		laAgentName: la,
+		whoCommand:      who,
+		wCommand:        w,
+		uptimeCommand:   ut,
+		laAgentName:     la,
 	}
 )
 
@@ -37,4 +37,3 @@ func RunWatchers() {
 func RunStatCollectors() {
 	go stats.LoadAverage(services.Container.Get(services.KeyValue).(*store.RedisStore))
 }
-

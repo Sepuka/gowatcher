@@ -48,36 +48,39 @@ func (r Result) GetType() ContentType {
 	return r.contentType
 }
 
-type Command interface {
-	Command() string
-	GetArgs() []string
-}
-
 type Cmd struct {
-	Cmd       string
-	Args string
-	Env []string
+	cmd  string
+	args []string
+	envs []string
 }
 
-func (c Cmd) Command() string {
-	return c.Cmd
+func NewCmd(cmd, args string) *Cmd {
+	return &Cmd{
+		cmd:  cmd,
+		args: strings.Split(args, " "),
+	}
 }
 
-func (c Cmd) GetArgs() []string {
-	return strings.Split(c.Args, " ")
+func NewEnvedCmd(cmd, args string, env string) *Cmd {
+	return &Cmd{
+		cmd:  cmd,
+		args: strings.Split(args, " "),
+		envs: strings.Split(env, " "),
+	}
 }
 
-func Run(command Command) Result {
+func Run(command *Cmd) Result {
 	result, err := execute(command)
 	if err != nil {
-		return NewResult(command.Command(), "command failed", err)
+		return NewResult(command.cmd, "command failed", err)
 	}
 
-	return NewResult(command.Command(), result, nil)
+	return NewResult(command.cmd, result, nil)
 }
 
-func execute(command Command) (string, error) {
-	cmd := exec.Command(command.Command(), command.GetArgs()...)
+func execute(command *Cmd) (string, error) {
+	cmd := exec.Command(command.cmd, command.args...)
+	cmd.Env = command.envs
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()

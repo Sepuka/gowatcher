@@ -10,22 +10,19 @@ const (
 	wCommand = "w"
 )
 
+// Show who is logged on and what they are doing.
+type wWatcher struct {
+	command *command.Cmd
+	loop    time.Duration
+}
+
 var (
 	wConfig = config.GetWatcherConfig(wAgentName)
-	w = &wWatcher{
-		&command.Cmd{
-			Cmd: wCommand,
-			Args: wConfig.Args,
-		},
+	w       = &wWatcher{
+		command.NewCmd(wCommand, utConfig.Args),
 		wConfig.GetLoop(),
 	}
 )
-
-// Show who is logged on and what they are doing.
-type wWatcher struct {
-	command command.Command
-	loop time.Duration
-}
 
 func (obj wWatcher) exec() {
 	handler := command.NewDfFormatResultHandler()

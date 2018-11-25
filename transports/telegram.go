@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	telegramPathTemplate = "%v/%v:%v/sendMessage"
+	telegramPathTemplate                = "%v/%v:%v/sendMessage"
 	transportTelegramName TransportName = "telegramm"
 )
 

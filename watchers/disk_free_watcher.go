@@ -12,17 +12,14 @@ const (
 
 // report file system disk space usage
 type dfWatcher struct {
-	command command.Command
-	loop time.Duration
+	command *command.Cmd
+	loop    time.Duration
 }
 
 var (
 	dfConfig = config.GetWatcherConfig(diskFreeAgentName)
-	df = &dfWatcher{
-		&command.Cmd{
-			Cmd: diskFreeCommand,
-			Args: dfConfig.Args,
-		},
+	df       = &dfWatcher{
+		command.NewCmd(diskFreeCommand, dfConfig.Args),
 		dfConfig.GetLoop(),
 	}
 )

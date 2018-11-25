@@ -10,22 +10,19 @@ const (
 	uptimeCommand = "uptime"
 )
 
+// Tell how long the system has been running.
+type uptimeWatcher struct {
+	command *command.Cmd
+	loop    time.Duration
+}
+
 var (
 	utConfig = config.GetWatcherConfig(upTimeAgentName)
-	ut = &uptimeWatcher{
-		&command.Cmd{
-			Cmd: uptimeCommand,
-			Args: utConfig.Args,
-		},
+	ut       = &uptimeWatcher{
+		command.NewCmd(uptimeCommand, utConfig.Args),
 		utConfig.GetLoop(),
 	}
 )
-
-// Tell how long the system has been running.
-type uptimeWatcher struct {
-	command command.Command
-	loop time.Duration
-}
 
 func (obj uptimeWatcher) exec() {
 	handler := command.NewDummyResultHandler()

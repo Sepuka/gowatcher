@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
+	_ "github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/services"
 	_ "github.com/sepuka/gowatcher/services/logger"
 	"github.com/sepuka/gowatcher/watchers"
@@ -13,7 +14,6 @@ import (
 	"os"
 	"syscall"
 	"time"
-	_ "github.com/sepuka/gowatcher/config"
 )
 
 const (
@@ -26,7 +26,7 @@ var (
 	stop          = make(chan struct{})
 	done          = make(chan struct{})
 	watcherResult chan command.Result
-	log  logrus.FieldLogger
+	log           logrus.FieldLogger
 	signal        = flag.String("s", "", "send signal to the daemon\nstop - to stop daemon")
 	daemonize     = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode      = flag.Bool("t", false, "Test mode")
