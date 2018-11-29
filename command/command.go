@@ -69,7 +69,7 @@ func NewEnvedCmd(cmd, args string, env string) *Cmd {
 	}
 }
 
-func Run(command *Cmd) Result {
+func runConsoleCommand(command *Cmd) Result {
 	result, err := execute(command)
 	if err != nil {
 		return NewResult(command.cmd, "command failed", err)

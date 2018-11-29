@@ -11,6 +11,7 @@ import (
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
+	"time"
 )
 
 const (
@@ -27,13 +28,19 @@ var (
 )
 
 func (obj loadAvgGraph) exec() {
-	data := getPlotData(services.Container.Get(services.KeyValue).(*store.RedisStore))
-	c := services.Container.Get(services.TransportChan).(chan command.Result)
-	if len(data) > 0 {
-		c <- buildImg(data)
-	} else {
-		c <- buildMsg()
+	callback := func() (result command.Result) {
+		data := getPlotData(services.Container.Get(services.KeyValue).(*store.RedisStore))
+		if len(data) > 0 {
+			result = buildImg(data)
+		} else {
+			result = buildMsg()
+		}
+
+		return result
 	}
+
+	handler := command.NewDummyResultHandler()
+	command.RunCallbackLoop(callback, time.Second * 5, handler)
 }
 
 func buildImg(data plotter.XYs) command.Result {
