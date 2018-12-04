@@ -3,14 +3,11 @@ package transports
 import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/pack"
-	"github.com/sepuka/gowatcher/services"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 )
 
-func sendText(httpClient *http.Client, msg command.Result, url string, format pack.FormatMode) (resp *http.Response, err error) {
-	log := services.Container.Get(services.Logger).(*logrus.Logger)
+func (obj Slack) sendText(httpClient *http.Client, msg command.Result, url string, format pack.FormatMode) (resp *http.Response, err error) {
 	d := map[string]interface{}{
 		"text": pack.FormatText(msg, format),
 	}
@@ -20,15 +17,15 @@ func sendText(httpClient *http.Client, msg command.Result, url string, format pa
 
 	resp, err = httpClient.Do(req)
 	if err != nil {
-		log.Errorf("Failed slack request %v", err)
+		obj.logger.Errorf("Failed slack request %v", err)
 		return nil, err
 	}
 
-	log.Debugf("Slack request to '%v' got '%v' status", url, resp.Status)
+	obj.logger.Debugf("Slack request to '%v' got '%v' status", url, resp.Status)
 	_, respErr := ioutil.ReadAll(resp.Body)
 
 	if respErr != nil {
-		log.Error(respErr)
+		obj.logger.Error(respErr)
 	}
 
 	defer resp.Body.Close()

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -39,16 +38,18 @@ type FilesUploadAPIResponse struct {
 	File  UploadedFile `json:"file"`
 }
 
-func sendImg(httpClient *http.Client, msg command.Result, cfg *slackConfig) (resp *http.Response, err error) {
+func (obj Slack) sendImg(httpClient *http.Client, msg command.Result, cfg *slackConfig) (resp *http.Response, err error) {
 	request, err := buildImgRequest(msg, cfg.FileUploadUrl, cfg.Token)
 	if err != nil {
-		log.Println("Build slack request failed: ", err)
+		obj.logger.Errorf("Build slack request failed: %s", err)
 	}
 
 	resp, err = httpClient.Do(request)
 
+	obj.logger.Debugf("Slack img request\n.\nRequest %s\nResponse %s", request, resp)
+
 	if err != nil {
-		log.Printf("Slack img request failure %s\n.\nRequest %s\nResponse %s", err, request, resp)
+		obj.logger.Errorf("Slack img request failure %s", err)
 		return nil, err
 	}
 

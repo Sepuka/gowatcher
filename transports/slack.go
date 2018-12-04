@@ -26,15 +26,15 @@ type slackConfig struct {
 type Slack struct {
 	httpClient *http.Client
 	cfg        *slackConfig
-	logger     logrus.StdLogger
+	logger     logrus.FieldLogger
 }
 
 func (obj Slack) Send(msg command.Result) (resp *http.Response, err error) {
 	switch msg.GetType() {
 	case command.ImageContent:
-		return sendImg(obj.httpClient, msg, obj.cfg)
+		return obj.sendImg(obj.httpClient, msg, obj.cfg)
 	default:
-		return sendText(obj.httpClient, msg, obj.cfg.Api, obj.cfg.TextMode)
+		return obj.sendText(obj.httpClient, msg, obj.cfg.Api, obj.cfg.TextMode)
 	}
 }
 

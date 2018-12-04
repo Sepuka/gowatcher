@@ -3,6 +3,7 @@ package watchers
 import (
 	"bytes"
 	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/parsers"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/services/store"
@@ -18,43 +19,44 @@ const (
 	title       = "Load average"
 	labelXTitle = "avg per 1 min"
 	watcherName = "LoadAverage"
+	width       = 32 * vg.Inch
+	height      = 4 * vg.Inch
 )
 
-type loadAvgGraph struct {
+type loadAvgGraphWatcher struct {
+	loop time.Duration
 }
 
 var (
-	la = &loadAvgGraph{}
+	laConfig = config.GetWatcherConfig(laAgentName)
+	la       = &loadAvgGraphWatcher{
+		loop: laConfig.Loop,
+	}
 )
 
-func (obj loadAvgGraph) exec() {
-	callback := func() (result command.Result) {
+func (obj loadAvgGraphWatcher) exec() {
+	fnc := func() (result command.Result) {
 		data := getPlotData(services.Container.Get(services.KeyValue).(*store.RedisStore))
-		if len(data) > 0 {
-			result = buildImg(data)
-		} else {
-			result = buildMsg()
+
+		if len(data) == 0 {
+			return command.NewResult(watcherName, "Load average storage is empty", nil)
 		}
 
-		return result
+		return buildImg(data)
 	}
 
 	handler := command.NewDummyResultHandler()
-	command.RunCallbackLoop(callback, time.Second * 5, handler)
+	command.RunFuncLoop(fnc, obj.loop, handler)
 }
 
 func buildImg(data plotter.XYs) command.Result {
 	p := makePlot()
 	plotutil.AddLinePoints(p, "la", data)
 	b := &bytes.Buffer{}
-	writer, _ := p.WriterTo(32*vg.Inch, 4*vg.Inch, "png") // size to config
+	writer, _ := p.WriterTo(width, height, "png")
 	writer.WriteTo(b)
 
 	return command.NewImgResult(watcherName, b.String())
-}
-
-func buildMsg() command.Result {
-	return command.NewResult(watcherName, "Load average storage is empty", nil)
 }
 
 func makePlot() *plot.Plot {

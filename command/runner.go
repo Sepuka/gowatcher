@@ -29,7 +29,7 @@ func ReadFileLoop(fileName string, period time.Duration, resultHandler ResultHan
 	doPeriodicalTask(period, resultHandler, readLaFunc)
 }
 
-func RunCallbackLoop(f func() Result, period time.Duration, resultHandler ResultHandler) {
+func RunFuncLoop(f func() Result, period time.Duration, resultHandler ResultHandler) {
 	doPeriodicalTask(period, resultHandler, f)
 }
 
