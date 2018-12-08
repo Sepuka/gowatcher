@@ -30,7 +30,7 @@ type loadAvgGraphWatcher struct {
 var (
 	laConfig = config.GetWatcherConfig(laAgentName)
 	la       = &loadAvgGraphWatcher{
-		loop: laConfig.Loop,
+		loop: laConfig.GetLoop(),
 	}
 )
 

@@ -2,10 +2,8 @@ package transports
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -19,7 +17,7 @@ const (
 	channels = "CBYQ32MN3" //TODO move to config
 )
 
-type UploadedFile struct {
+type uploadedFile struct {
 	ID                 string `json:"id"`
 	Title              string `json:"title"`
 	Name               string `json:"name"`
@@ -32,34 +30,40 @@ type UploadedFile struct {
 	PublicPermalink    string `json:"permalink_public"`
 }
 
-type FilesUploadAPIResponse struct {
+type filesUploadAPIResponse struct {
 	Ok    bool         `json:"ok"`
 	Error string       `json:"error"`
-	File  UploadedFile `json:"file"`
+	File  uploadedFile `json:"file"`
 }
 
-func (obj Slack) sendImg(httpClient *http.Client, msg command.Result, cfg *slackConfig) (resp *http.Response, err error) {
-	request, err := buildImgRequest(msg, cfg.FileUploadUrl, cfg.Token)
+func (obj Slack) sendImg(msg command.Result) (err error) {
+	request, err := buildImgRequest(msg, obj.cfg.FileUploadUrl, obj.cfg.Token)
+
 	if err != nil {
 		obj.logger.Errorf("Build slack request failed: %s", err)
+
+		return err
 	}
 
-	resp, err = httpClient.Do(request)
+	sender := &loggedRequestSender{
+		obj.httpClient,
+		obj.logger,
+		new(filesUploadAPIResponse),
+	}
 
-	obj.logger.Debugf("Slack img request\n.\nRequest %s\nResponse %s", request, resp)
-
+	err = sender.sendRequest(request)
 	if err != nil {
-		obj.logger.Errorf("Slack img request failure %s", err)
-		return nil, err
+		return err
 	}
 
-	body, _ := ioutil.ReadAll(resp.Body)
-	res := new(FilesUploadAPIResponse)
-	_ = json.Unmarshal(body, res)
+	answer := sender.answer.(*filesUploadAPIResponse)
+	if answer.Ok {
+		obj.logger.Infof("Img %s uploaded to slack ", answer.File)
+	} else {
+		obj.logger.Error("Img not uploaded to slack with error '%s'", answer.Error)
+	}
 
-	defer resp.Body.Close()
-
-	return resp, err
+	return err
 }
 
 func buildImgRequest(msg command.Result, url string, token string) (*http.Request, error) {

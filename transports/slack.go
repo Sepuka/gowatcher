@@ -14,8 +14,6 @@ import (
 
 const transportSlackName TransportName = "slack"
 
-var slackCfg slackConfig
-
 type slackConfig struct {
 	Api           string          `id:"api" default:"https://slack.com/Api"`
 	TextMode      pack.FormatMode `id:"textMode"`
@@ -26,15 +24,15 @@ type slackConfig struct {
 type Slack struct {
 	httpClient *http.Client
 	cfg        *slackConfig
-	logger     logrus.FieldLogger
+	logger     *logrus.Logger
 }
 
-func (obj Slack) Send(msg command.Result) (resp *http.Response, err error) {
+func (obj Slack) Send(msg command.Result) (err error) {
 	switch msg.GetType() {
 	case command.ImageContent:
-		return obj.sendImg(obj.httpClient, msg, obj.cfg)
+		return obj.sendImg(msg)
 	default:
-		return obj.sendText(obj.httpClient, msg, obj.cfg.Api, obj.cfg.TextMode)
+		return obj.sendText(msg)
 	}
 }
 
@@ -45,7 +43,8 @@ func (obj Slack) GetName() TransportName {
 func init() {
 	services.Register(func(builder *di.Builder, params config.Configuration) error {
 		cfg := params.Transports["slack"].(map[string]interface{})
-		err := gonfig.LoadMap(&slackCfg, cfg, gonfig.Conf{})
+		slackCfg := &slackConfig{}
+		err := gonfig.LoadMap(slackCfg, cfg, gonfig.Conf{})
 		if err != nil {
 			log.Fatalf("Cannot instantiate slack configuration: %v", err)
 			return err
@@ -58,7 +57,7 @@ func init() {
 			Build: func(ctn di.Container) (interface{}, error) {
 				return &Slack{
 					&http.Client{},
-					&slackCfg,
+					slackCfg,
 					services.Container.Get(services.Logger).(*logrus.Logger),
 				}, nil
 			},

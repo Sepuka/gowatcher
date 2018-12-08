@@ -36,11 +36,13 @@ type Telegram struct {
 	logger     logrus.StdLogger
 }
 
-func (obj Telegram) Send(msg command.Result) (resp *http.Response, err error) {
+func (obj Telegram) Send(msg command.Result) (err error) {
 	url := fmt.Sprintf(telegramPathTemplate, obj.cfg.Api, obj.cfg.BotId, obj.cfg.Token)
 	body := obj.buildRequest(msg)
 
-	return http.Post(url, contentTypeJson, body)
+	_, err = http.Post(url, contentTypeJson, body)
+
+	return err
 }
 
 func (obj Telegram) GetName() TransportName {

@@ -5,7 +5,6 @@ import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/services"
-	"net/http"
 )
 
 const (
@@ -16,7 +15,7 @@ type TransportName string
 
 type Transport interface {
 	GetName() TransportName
-	Send(msg command.Result) (resp *http.Response, err error)
+	Send(msg command.Result) (err error)
 }
 
 func init() {
