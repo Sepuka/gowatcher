@@ -31,7 +31,7 @@ func (redis RedisStore) List(key string) []string {
 
 func init() {
 	services.Register(func(builder *di.Builder, cfg config.Configuration) error {
-		redisAddr := fmt.Sprintf("%s:%d", cfg.KeyValueStore.Host, cfg.KeyValueStore.Port)
+		redisAddr := fmt.Sprintf("%v:%d", cfg.KeyValueStore.Host, cfg.KeyValueStore.Port)
 		redisPass := cfg.KeyValueStore.Password
 		redisDb := cfg.KeyValueStore.Db
 

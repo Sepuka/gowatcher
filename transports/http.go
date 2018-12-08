@@ -27,7 +27,7 @@ func (obj loggedRequestSender) sendRequest(req *http.Request) error {
 
 	response, err = obj.httpClient.Do(req)
 	if err != nil {
-		log.Errorf("Request %s failed with error %s", formatRequest(*req), err)
+		log.Errorf("Request %v failed with error %v", formatRequest(*req), err)
 
 		return err
 	}
@@ -45,7 +45,7 @@ func (obj loggedRequestSender) sendRequest(req *http.Request) error {
 		"response": formatResponse(*response),
 		"answer": obj.answer,
 		"status": response.Status,
-	}).Debugf("Request to %s", req.Host)
+	}).Debugf("Request to %v", req.Host)
 
 	defer response.Body.Close()
 

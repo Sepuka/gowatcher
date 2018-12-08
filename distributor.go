@@ -18,7 +18,7 @@ func transmitter() {
 			log.WithFields(logrus.Fields{
 				"transport": distributor.GetName(),
 				"msg_type":  msg.GetType(),
-			}).Debugf("Sending '%s' message.", msg.GetName())
+			}).Debugf("Sending '%v' message.", msg.GetName())
 
 			go distributor.Send(msg)
 		}

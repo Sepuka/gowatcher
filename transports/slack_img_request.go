@@ -40,7 +40,7 @@ func (obj Slack) sendImg(msg command.Result) (err error) {
 	request, err := buildImgRequest(msg, obj.cfg.FileUploadUrl, obj.cfg.Token)
 
 	if err != nil {
-		obj.logger.Errorf("Build slack request failed: %s", err)
+		obj.logger.Errorf("Build slack request failed: %v", err)
 
 		return err
 	}
@@ -58,9 +58,9 @@ func (obj Slack) sendImg(msg command.Result) (err error) {
 
 	answer := sender.answer.(*filesUploadAPIResponse)
 	if answer.Ok {
-		obj.logger.Infof("Img %s uploaded to slack ", answer.File)
+		obj.logger.Infof("Img %v uploaded to slack ", answer.File)
 	} else {
-		obj.logger.Error("Img not uploaded to slack with error '%s'", answer.Error)
+		obj.logger.Error("Img not uploaded to slack with error '%v'", answer.Error)
 	}
 
 	return err
@@ -90,7 +90,7 @@ func buildImgRequest(msg command.Result, url string, token string) (*http.Reques
 func writeFile(w *multipart.Writer, content []byte) error {
 	header := make(textproto.MIMEHeader)
 	header.Set("Content-Disposition",
-		fmt.Sprintf(`form-data; name="file"; fileName="%s"`, fileName))
+		fmt.Sprintf(`form-data; name="file"; fileName="%v"`, fileName))
 	header.Set("Content-Type", fileType)
 	part, err := w.CreatePart(header)
 	part.Write(content)

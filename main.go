@@ -102,7 +102,7 @@ func main() {
 
 	err = daemon.ServeSignals()
 	if err != nil {
-		log.Debugf("Error: %s", err)
+		log.Debugf("Error: %v", err)
 	}
 	log.Info("daemon terminated.")
 }

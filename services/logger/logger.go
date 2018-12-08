@@ -16,7 +16,7 @@ func init() {
 			return errors.New("cannot parse logger level")
 		}
 
-		fileLog, err := os.OpenFile(cfg.Logger.File, os.O_WRONLY|os.O_CREATE, 0640)
+		fileLog, err := os.OpenFile(cfg.Logger.File, os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
 			return errors.New("cannot open or create log file")
 		}
@@ -25,7 +25,7 @@ func init() {
 			Name: services.Logger,
 			Build: func(ctn di.Container) (interface{}, error) {
 				log := &logrus.Logger{
-					Formatter:    new(logrus.TextFormatter),
+					Formatter:    new(logrus.JSONFormatter),
 					Hooks:        make(logrus.LevelHooks),
 					Level:        LogLevel,
 					ExitFunc:     os.Exit,
