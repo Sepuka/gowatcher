@@ -41,10 +41,10 @@ func (obj loggedRequestSender) sendRequest(req *http.Request) error {
 	}
 
 	obj.log.WithFields(logrus.Fields{
-		"request": formatRequest(*req),
+		"request":  formatRequest(*req),
 		"response": formatResponse(*response),
-		"answer": obj.answer,
-		"status": response.Status,
+		"answer":   obj.answer,
+		"status":   response.Status,
 	}).Debugf("Request to %v", req.Host)
 
 	defer response.Body.Close()
@@ -99,14 +99,14 @@ func parseResponse(r http.Response, response interface{}) error {
 	}
 
 	switch r.Header.Get("Content-Type") {
-		case "application/json; charset=utf-8", "application/json":
-			err := json.Unmarshal(body, response)
-			if err != nil {
-				return err
-			}
-			return nil
-		default:
-			response = &body
-			return nil
+	case "application/json; charset=utf-8", "application/json":
+		err := json.Unmarshal(body, response)
+		if err != nil {
+			return err
+		}
+		return nil
+	default:
+		response = &body
+		return nil
 	}
 }

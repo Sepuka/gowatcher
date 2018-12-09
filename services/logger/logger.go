@@ -9,6 +9,9 @@ import (
 	"os"
 )
 
+const logMode = os.FileMode(0644)
+const logFlags = os.O_WRONLY | os.O_CREATE
+
 func init() {
 	services.Register(func(builder *di.Builder, cfg config.Configuration) error {
 		LogLevel, err := logrus.ParseLevel(cfg.Logger.Level)
@@ -16,7 +19,7 @@ func init() {
 			return errors.New("cannot parse logger level")
 		}
 
-		fileLog, err := os.OpenFile(cfg.Logger.File, os.O_WRONLY|os.O_CREATE, 0644)
+		fileLog, err := os.OpenFile(cfg.Logger.File, logFlags, logMode)
 		if err != nil {
 			return errors.New("cannot open or create log file")
 		}
