@@ -52,7 +52,7 @@ Planned features:
 =====
 1. In case one receiver is not available (for example, telegram is blocked) then other receivers must report this.
 2. :heavy_check_mark: ~~Each watcher has self time of loop in settings~~
-3. Watchers supports some args in settings
+3. :heavy_check_mark: ~~Watchers supports some args in settings~~
 4. `df` watcher can report about critical free size of partial
 5. Exists _load average_ graph which published to receivers periodically
 6. Released _email_ receiver with customizable watchers

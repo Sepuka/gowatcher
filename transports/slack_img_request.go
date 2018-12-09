@@ -58,9 +58,9 @@ func (obj Slack) sendImg(msg command.Result) (err error) {
 
 	answer := sender.answer.(*filesUploadAPIResponse)
 	if answer.Ok {
-		obj.logger.Infof("Img %v uploaded to slack ", answer.File)
+		obj.logger.Infof("Img %v uploaded to slack", answer.File)
 	} else {
-		obj.logger.Error("Img not uploaded to slack with error '%v'", answer.Error)
+		obj.logger.Errorf("Img not uploaded to slack with error '%v'", answer.Error)
 	}
 
 	return err

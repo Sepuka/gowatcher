@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gravitational/log"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -27,7 +26,7 @@ func (obj loggedRequestSender) sendRequest(req *http.Request) error {
 
 	response, err = obj.httpClient.Do(req)
 	if err != nil {
-		log.Errorf("Request %v failed with error %v", formatRequest(*req), err)
+		obj.log.Errorf("Request %v failed with error %v", formatRequest(*req), err)
 
 		return err
 	}

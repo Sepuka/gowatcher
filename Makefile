@@ -7,7 +7,7 @@ BUILD=`git rev-parse HEAD`
 TIMEBUILD=`date -u '+%Y-%m-%d_%I:%M:%S%p'`
 OUT_FILE=watcher
 
-all: test
+all: tests
 
 init:
 	dep ensure -v
