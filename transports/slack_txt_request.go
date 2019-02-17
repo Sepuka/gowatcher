@@ -6,11 +6,10 @@ import (
 	"net/http"
 )
 
-func (obj Slack) sendText(msg command.Result) (err error) {
-	format := obj.cfg.TextMode
+func (obj slack) sendText(msg command.Result) (err error) {
 	url := obj.cfg.Api
 	d := map[string]interface{}{
-		"text": pack.FormatText(msg, format),
+		"text": pack.FormatText(msg, obj.cfg.TextMode),
 	}
 	payload := pack.Encode(d)
 	req, _ := http.NewRequest("POST", url, payload)

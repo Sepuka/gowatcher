@@ -7,11 +7,6 @@ import (
 
 const (
 	Logger        = "logger"
-	Slack         = "transport.slack"
-	Telegram      = "transport.telegram"
-	Transports    = "transport.all"
-	TransportChan = "transport.chan"
-	KeyValue      = "store.key_value"
 )
 
 var (
@@ -38,4 +33,22 @@ func Build(params config.Configuration) {
 	}
 
 	Container = builder.Build()
+}
+
+func GetByTag(tag string) []interface{} {
+	var defs []interface{}
+
+	for _, def := range Container.Definitions() {
+		for _, defTag := range def.Tags {
+			if defTag.Name == tag {
+				var fff interface{}
+				if err := Container.Fill(def.Name, &fff); err != nil {
+					panic(err)
+				}
+				defs = append(defs, fff)
+			}
+		}
+	}
+
+	return defs
 }

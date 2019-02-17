@@ -1,12 +1,22 @@
-package stats
+package handler
 
 import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/parsers"
-	"github.com/sepuka/gowatcher/services"
+	"github.com/sepuka/gowatcher/stats"
 	"github.com/sirupsen/logrus"
 	"time"
+)
+
+const (
+	LoadAvgKeyName       = "loadavg1min"
+	loadAvgLoopTime      = time.Second * 5
+	loadAvgHistoryPeriod = time.Hour * 24
+)
+
+var (
+	loadAvgKeysCount = int(loadAvgHistoryPeriod.Seconds() / loadAvgLoopTime.Seconds())
 )
 
 type loadAverageSnapshot struct {
@@ -18,30 +28,18 @@ type loadAverageSnapshot struct {
 	lasPid          uint16
 }
 
-const (
-	LoadAvgKeyName       = "loadavg1min"
-	loadAvgPath          = "/proc/loadavg"
-	loadAvgLoopTime      = time.Second * 5
-	loadAvgHistoryPeriod = time.Hour * 24
-)
-
-var (
-	loadAvgKeysCount = int(loadAvgHistoryPeriod.Seconds() / loadAvgLoopTime.Seconds())
-)
-
-func LoadAverage(writer SliceStoreWriter) {
-	handler := &laResultHandler{
-		services.Container.Get(services.TransportChan).(chan command.Result),
-		writer,
-		services.Container.Get(services.Logger).(logrus.FieldLogger),
-	}
-	command.ReadFileLoop(loadAvgPath, loadAvgLoopTime, handler)
+type laResultHandler struct {
+	c      chan<-command.Result
+	store  stats.SliceStoreWriter
+	logger logrus.FieldLogger
 }
 
-type laResultHandler struct {
-	c      chan<- command.Result
-	store  SliceStoreWriter
-	logger logrus.FieldLogger
+func NewLaResultHandler(transportChan chan<-command.Result, redis stats.SliceStoreWriter, logger *logrus.Logger) command.ResultHandler {
+	return &laResultHandler{
+		c: transportChan,
+		store: redis,
+		logger: logger,
+	}
 }
 
 func (handler laResultHandler) Handle(result command.Result) {
@@ -71,6 +69,6 @@ func parse(result string) loadAverageSnapshot {
 	}
 }
 
-func deleteOldKeys(stack SliceStoreWriter) {
+func deleteOldKeys(stack stats.SliceStoreWriter) {
 	stack.Trim(LoadAvgKeyName, loadAvgKeysCount)
 }

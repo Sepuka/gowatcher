@@ -1,26 +1,17 @@
 package main
 
 import (
-	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/definition/transport"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/transports"
-	"github.com/sirupsen/logrus"
 )
 
 func transmitter() {
-	c := services.Container.Get(services.TransportChan).(chan command.Result)
-
 	for {
-		msg := <-c
+		msg := <-watcherResult
 
-		for _, distributor := range services.Container.Get(services.Transports).([]transports.Transport) {
-
-			log.WithFields(logrus.Fields{
-				"transport": distributor.GetName(),
-				"msg_type":  msg.GetType(),
-			}).Debugf("Sending '%v' message.", msg.GetName())
-
-			go distributor.Send(msg)
+		for _, sender := range services.GetByTag(transport.DefTransportTag) {
+			go sender.(transports.Transport).Send(msg)
 		}
 	}
 }

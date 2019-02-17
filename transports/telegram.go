@@ -2,51 +2,51 @@ package transports
 
 import (
 	"fmt"
-	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/pack"
-	"github.com/sepuka/gowatcher/services"
 	"github.com/sirupsen/logrus"
-	"github.com/stevenroose/gonfig"
 	"io"
 	"net/http"
 	"strconv"
 )
 
 const (
-	telegramPathTemplate                = "%v/%v:%v/sendMessage"
-	transportTelegramName TransportName = "telegram"
+	telegramPathTemplate  = "%v/%v:%v/sendMessage"
+	transportTelegramName = "telegram"
 )
-
-var telegramCfg TelegramConfig
-
-type TelegramConfig struct {
-	Api          string          `id:"Api"`
-	SilentNotify bool            `id:"SilentNotify" default:true`
-	TextMode     pack.FormatMode `id:"TextMode"`
-	ChatId       string          `id:"ChatId"`
-	BotId        string          `id:"BotId"`
-	Token        string          `id:"Token"`
-}
 
 type Telegram struct {
 	httpClient *http.Client
-	cfg        *TelegramConfig
-	logger     logrus.StdLogger
+	cfg        *config.TelegramConfig
+	logger     logrus.FieldLogger
+}
+
+func NewTelegram(http *http.Client, cfg *config.TelegramConfig, logger *logrus.Logger) Transport {
+	logger.WithFields(logrus.Fields{
+		"transport": transportTelegramName,
+	})
+
+	return &Telegram{
+		httpClient: http,
+		cfg:        cfg,
+		logger:     logger,
+	}
 }
 
 func (obj Telegram) Send(msg command.Result) (err error) {
+	obj.logger.WithFields(
+		logrus.Fields{
+			"msg_type": msg.GetType(),
+		},
+	).Debugf("Sending '%v' message.", msg.GetName())
+
 	url := fmt.Sprintf(telegramPathTemplate, obj.cfg.Api, obj.cfg.BotId, obj.cfg.Token)
 	body := obj.buildRequest(msg)
 
 	_, err = http.Post(url, contentTypeJson, body)
 
 	return err
-}
-
-func (obj Telegram) GetName() TransportName {
-	return transportTelegramName
 }
 
 func (obj Telegram) buildRequest(data command.Result) io.Reader {
@@ -63,23 +63,4 @@ func (obj Telegram) buildRequest(data command.Result) io.Reader {
 
 func (obj Telegram) isSilentNotify() string {
 	return strconv.FormatBool(obj.cfg.SilentNotify)
-}
-
-func init() {
-	services.Register(func(builder *di.Builder, params config.Configuration) error {
-		cfg := params.Transports["telegram"].(map[string]interface{})
-		gonfig.LoadMap(&telegramCfg, cfg, gonfig.Conf{})
-		telegramCfg.TextMode = pack.GetTextMode(cfg["textMode"].(string))
-
-		return builder.Add(di.Def{
-			Name: services.Telegram,
-			Build: func(ctn di.Container) (interface{}, error) {
-				return &Telegram{
-					&http.Client{},
-					&telegramCfg,
-					services.Container.Get(services.Logger).(*logrus.Logger),
-				}, nil
-			},
-		})
-	})
 }

@@ -7,20 +7,18 @@ import (
 	"strings"
 )
 
-type FormatMode string
-
 const (
-	TextModeHTML     FormatMode = "html"
-	TextModeMarkdown FormatMode = "markdown"
-	TextModeRaw      FormatMode = "raw"
+	TextModeHTML     = "html"
+	TextModeMarkdown = "markdown"
+	TextModeRaw      = "raw"
 	//https://get.slack.help/hc/en-us/articles/202288908-how-can-i-add-formatting-to-my-messages-
-	TextModeSlack FormatMode = "slack"
+	TextModeSlack    = "slack"
 )
 
-func FormatText(data command.Result, mode FormatMode) string {
+func FormatText(data command.Result, mode string) string {
 	host := env.GetCurrentHost()
 
-	switch mode {
+	switch strings.ToLower(mode) {
 	case TextModeHTML:
 		return fmt.Sprintf(
 			"<strong>%v</strong> <b>%v</b> says: <code>%s</code>",
@@ -46,19 +44,10 @@ func FormatText(data command.Result, mode FormatMode) string {
 			data.GetName(),
 			data.GetContent())
 	default:
-		panic("Unknown format " + mode)
-	}
-}
-
-func GetTextMode(mode string) FormatMode {
-	switch strings.ToLower(mode) {
-	case "html":
-		return TextModeHTML
-	case "markdown":
-		return TextModeMarkdown
-	case "slack":
-		return TextModeSlack
-	default:
-		return TextModeRaw
+		return fmt.Sprintf(
+			"%v %v says: %s",
+			host,
+			data.GetName(),
+			data.GetContent())
 	}
 }

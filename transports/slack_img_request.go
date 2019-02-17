@@ -36,7 +36,7 @@ type filesUploadAPIResponse struct {
 	File  uploadedFile `json:"file"`
 }
 
-func (obj Slack) sendImg(msg command.Result) (err error) {
+func (obj slack) sendImg(msg command.Result) (err error) {
 	request, err := buildImgRequest(msg, obj.cfg.FileUploadUrl, obj.cfg.Token)
 
 	if err != nil {

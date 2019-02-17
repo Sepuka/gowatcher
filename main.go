@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	_ "github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/definition/logger"
+	"github.com/sepuka/gowatcher/definition/transport"
 	"github.com/sepuka/gowatcher/services"
-	_ "github.com/sepuka/gowatcher/services/logger"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
 	"github.com/sirupsen/logrus"
@@ -42,8 +42,8 @@ var (
 
 func init() {
 	services.Build(config.AppConfig)
-	watcherResult = services.Container.Get(services.TransportChan).(chan command.Result)
-	log = services.Container.Get(services.Logger).(*logrus.Logger)
+	services.Container.Fill(transport.DefTransportChan, &watcherResult)
+	services.Container.Fill(logger.DefLogger, &log)
 }
 
 func main() {
@@ -77,7 +77,6 @@ func main() {
 
 	if !daemon.WasReborn() && !*daemonize {
 		watchers.RunWatchers()
-		watchers.RunStatCollectors()
 		log.Info("Press <Ctrl>+C to exit")
 		daemonLoop()
 		return
@@ -96,7 +95,6 @@ func main() {
 	log.Info("watcher daemon started")
 
 	watchers.RunWatchers()
-	watchers.RunStatCollectors()
 
 	go daemonLoop()
 

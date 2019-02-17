@@ -1,12 +1,10 @@
-package watchers
+package domain
 
 import (
 	"bytes"
 	"github.com/sepuka/gowatcher/command"
-	"github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/domain/handler"
 	"github.com/sepuka/gowatcher/parsers"
-	"github.com/sepuka/gowatcher/services"
-	"github.com/sepuka/gowatcher/services/store"
 	"github.com/sepuka/gowatcher/stats"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -23,20 +21,15 @@ const (
 	height      = 4 * vg.Inch
 )
 
-type loadAvgGraphWatcher struct {
-	loop time.Duration
+type LoadAvgGraphWatcher struct {
+	Loop    time.Duration
+	Handler command.ResultHandler
+	Redis   stats.SliceStoreReader
 }
 
-var (
-	laConfig = config.GetWatcherConfig(laAgentName)
-	la       = &loadAvgGraphWatcher{
-		loop: laConfig.GetLoop(),
-	}
-)
-
-func (obj loadAvgGraphWatcher) exec() {
+func (obj *LoadAvgGraphWatcher) Exec() {
 	fnc := func() (result command.Result) {
-		data := getPlotData(services.Container.Get(services.KeyValue).(*store.RedisStore))
+		data := getPlotData(obj.Redis)
 
 		if len(data) == 0 {
 			return command.NewResult(watcherName, "Load average storage is empty", nil)
@@ -45,8 +38,19 @@ func (obj loadAvgGraphWatcher) exec() {
 		return buildImg(data)
 	}
 
-	handler := command.NewDummyResultHandler()
-	command.RunFuncLoop(fnc, obj.loop, handler)
+	command.RunFuncLoop(fnc, obj.Loop, obj.Handler)
+}
+
+func getPlotData(reader stats.SliceStoreReader) plotter.XYs {
+	data := reader.List(handler.LoadAvgKeyName)
+	cnt := len(data)
+	xYs := make(plotter.XYs, cnt)
+	for i, el := range data {
+		xYs[i].Y = parsers.FetchFloat(el)
+		xYs[i].X = float64(i)
+	}
+
+	return xYs
 }
 
 func buildImg(data plotter.XYs) command.Result {
@@ -69,16 +73,4 @@ func makePlot() *plot.Plot {
 	plt.X.Label.Text = labelXTitle
 
 	return plt
-}
-
-func getPlotData(reader stats.SliceStoreReader) plotter.XYs {
-	data := reader.List(stats.LoadAvgKeyName)
-	cnt := len(data)
-	xYs := make(plotter.XYs, cnt)
-	for i, el := range data {
-		xYs[i].Y = parsers.FetchFloat(el)
-		xYs[i].X = float64(i)
-	}
-
-	return xYs
 }
