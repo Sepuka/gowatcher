@@ -21,26 +21,32 @@
     {
       "name": "DiskFree",
       "loop": 21600 //6 hours
+      "isActive": true
     },
     {
       "name": "Uptime",
       "loop": 86400 //24 hours
+      "isActive": true
     },
     {
       "name": "Who",
-      "loop": 2
+      "loop": 2,
+      "isActive": true
     },
     {
       "name": "W",
       "loop": 21600 //6 hours
+      "isActive": true
     },
     {
       "name": "LoadAvgGraph",
-      "loop": 86400
+      "loop": 86400,
+      "isActive": true
     },
     {
       "name": "Temp",
-      "loop": 21600
+      "loop": 21600,
+      "isActive": true
     }
   ],
   "redis": {

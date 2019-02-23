@@ -4,7 +4,6 @@ import (
 	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	"github.com/sepuka/gowatcher/definition/config/watcher"
 	"github.com/sepuka/gowatcher/definition/transport"
 	"github.com/sepuka/gowatcher/domain"
 	"github.com/sepuka/gowatcher/services"
@@ -12,7 +11,8 @@ import (
 
 const (
 	DefWatcherWho = "definition.watcher.who"
-	whoCommand = "who"
+	whoCommand    = "who"
+	whoAgentName  = "Who"
 )
 
 func init() {
@@ -24,11 +24,11 @@ func init() {
 			}},
 			Build: func(ctn di.Container) (interface{}, error) {
 				var (
-					cfg config.WatcherConfig
+					cfg           config.WatcherConfig
 					transportChan chan<- command.Result
 				)
 
-				if err := services.Container.Fill(watcher.DefWatcherConfigWho, &cfg); err != nil {
+				if err := params.Fill(whoAgentName, &cfg); err != nil {
 					return nil, err
 				}
 
@@ -37,12 +37,11 @@ func init() {
 				}
 
 				return &domain.WhoWatcher{
-					Command: command.NewEnvedCmd(whoCommand, cfg.Args, "lang=en_EN"),
-					Loop: cfg.GetLoop(),
+					Command:       command.NewEnvedCmd(whoCommand, cfg.Args, "lang=en_EN"),
+					Loop:          cfg.GetLoop(),
 					TransportChan: transportChan,
 				}, nil
 			},
 		})
 	})
 }
-

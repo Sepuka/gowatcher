@@ -4,16 +4,16 @@ import (
 	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	config2 "github.com/sepuka/gowatcher/definition/config"
 	"github.com/sepuka/gowatcher/definition/transport"
 	"github.com/sepuka/gowatcher/domain"
 	"github.com/sepuka/gowatcher/services"
 )
 
 const (
-	DefWatcherTemperature = "definition.watcher.temperature"
-	tempCommand = "sensors"
+	DefWatcherTemperature   = "definition.watcher.temperature"
+	tempCommand             = "sensors"
 	withoutParseChipNameArg = "-A"
+	tempAgentName           = "Temp"
 )
 
 func init() {
@@ -25,11 +25,11 @@ func init() {
 			}},
 			Build: func(ctn di.Container) (interface{}, error) {
 				var (
-					cfg config.WatcherConfig
+					cfg           config.WatcherConfig
 					transportChan chan<- command.Result
 				)
 
-				if err := services.Container.Fill(config2.DefWatcherConfigTemperature, &cfg); err != nil {
+				if err := params.Fill(tempAgentName, &cfg); err != nil {
 					return nil, err
 				}
 
@@ -39,7 +39,7 @@ func init() {
 
 				return &domain.TemperatureWatcher{
 					Command: command.NewCmd(tempCommand, withoutParseChipNameArg),
-					Loop: cfg.GetLoop(),
+					Loop:    cfg.GetLoop(),
 					Handler: command.NewDummyResultHandler(transportChan),
 				}, nil
 			},

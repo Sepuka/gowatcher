@@ -4,7 +4,6 @@ import (
 	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	watcher2 "github.com/sepuka/gowatcher/definition/config/watcher"
 	"github.com/sepuka/gowatcher/definition/transport"
 	"github.com/sepuka/gowatcher/domain"
 	"github.com/sepuka/gowatcher/services"
@@ -12,7 +11,8 @@ import (
 
 const (
 	DefWatcherDiskFree = "definition.watcher.disk_free"
-	dfCommand = "df"
+	dfCommand          = "df"
+	dfAgentName        = "DiskFree"
 )
 
 func init() {
@@ -24,11 +24,11 @@ func init() {
 			}},
 			Build: func(ctn di.Container) (interface{}, error) {
 				var (
-					cfg config.WatcherConfig
+					cfg           config.WatcherConfig
 					transportChan chan<- command.Result
 				)
 
-				if err := services.Container.Fill(watcher2.DefWatcherConfigDiskFree, &cfg); err != nil {
+				if err := params.Fill(dfAgentName, &cfg); err != nil {
 					return nil, err
 				}
 
@@ -37,8 +37,8 @@ func init() {
 				}
 
 				return &domain.DfWatcher{
-					Command: command.NewCmd(dfCommand, cfg.Args),
-					Loop: cfg.GetLoop(),
+					Command:       command.NewCmd(dfCommand, cfg.Args),
+					Loop:          cfg.GetLoop(),
 					TransportChan: transportChan,
 				}, nil
 			},

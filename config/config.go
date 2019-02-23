@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"github.com/stevenroose/gonfig"
 	"log"
 	"os"
@@ -25,9 +26,10 @@ type KeyValue struct {
 }
 
 type WatcherConfig struct {
-	Name string        `id:"name"`
-	Loop time.Duration `id:"loop" default:"86400"`
-	Args string        `id:"args"`
+	Name     string        `id:"name"`
+	Loop     time.Duration `id:"loop" default:"86400"`
+	Args     string        `id:"args"`
+	IsActive bool          `id:"isActive" default:true`
 }
 
 func (setting WatcherConfig) GetName() string {
@@ -45,14 +47,16 @@ type Configuration struct {
 	Logger        Logger                 `id:"log"`
 }
 
-func GetWatcherConfig(watcherName string) WatcherConfig {
+func (cfg *Configuration) Fill(name string, dst *WatcherConfig) error {
 	for _, cfg := range AppConfig.Watchers {
-		if cfg.GetName() == watcherName {
-			return cfg
+		if cfg.GetName() == name {
+			*dst = cfg
+
+			return nil
 		}
 	}
 
-	panic("Cannot find watcher config " + watcherName)
+	return errors.New("Cannot find watcher config " + name)
 }
 
 var (

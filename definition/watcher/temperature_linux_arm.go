@@ -4,7 +4,6 @@ import (
 	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	config2 "github.com/sepuka/gowatcher/definition/config"
 	"github.com/sepuka/gowatcher/definition/transport"
 	"github.com/sepuka/gowatcher/domain"
 	"github.com/sepuka/gowatcher/services"
@@ -12,7 +11,8 @@ import (
 
 const (
 	DefWatcherTemperature = "definition.watcher.temperature"
-	tempCommand = "/opt/vc/bin/vcgencmd"
+	tempCommand           = "/opt/vc/bin/vcgencmd"
+	measureTempArg        = "measure_temp"
 )
 
 func init() {
@@ -24,11 +24,11 @@ func init() {
 			}},
 			Build: func(ctn di.Container) (interface{}, error) {
 				var (
-					cfg config.WatcherConfig
+					cfg           config.WatcherConfig
 					transportChan chan<- command.Result
 				)
 
-				if err := services.Container.Fill(config2.DefWatcherConfigTemperature, &cfg); err != nil {
+				if err := params.Fill(tempAgentName, &cfg); err != nil {
 					return nil, err
 				}
 
@@ -37,8 +37,8 @@ func init() {
 				}
 
 				return &domain.TemperatureWatcher{
-					Command: command.NewEnvedCmd(tempCommand, cfg.Args, "measure_temp"),
-					Loop: cfg.GetLoop(),
+					Command: command.NewCmd(tempCommand, measureTempArg),
+					Loop:    cfg.GetLoop(),
 					Handler: command.NewDummyResultHandler(transportChan),
 				}, nil
 			},

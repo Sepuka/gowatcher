@@ -4,7 +4,6 @@ import (
 	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	config2 "github.com/sepuka/gowatcher/definition/config"
 	"github.com/sepuka/gowatcher/definition/store"
 	"github.com/sepuka/gowatcher/definition/transport"
 	"github.com/sepuka/gowatcher/domain"
@@ -14,6 +13,7 @@ import (
 
 const (
 	DefLoadAverage = "definition.watcher.la"
+	laAgentName    = "LoadAvgGraph"
 )
 
 func init() {
@@ -25,12 +25,12 @@ func init() {
 			}},
 			Build: func(ctn di.Container) (interface{}, error) {
 				var (
-					cfg config.WatcherConfig
+					cfg           config.WatcherConfig
 					transportChan chan<- command.Result
-					redis stats.SliceStoreReader
+					redis         stats.SliceStoreReader
 				)
 
-				if err := services.Container.Fill(config2.DefWatcherConfigLoadAverage, &cfg); err != nil {
+				if err := params.Fill(laAgentName, &cfg); err != nil {
 					return nil, err
 				}
 
@@ -43,9 +43,9 @@ func init() {
 				}
 
 				return &domain.LoadAvgGraphWatcher{
-					Loop: cfg.GetLoop(),
+					Loop:    cfg.GetLoop(),
 					Handler: command.NewDummyResultHandler(transportChan),
-					Redis: redis,
+					Redis:   redis,
 				}, nil
 			},
 		})
