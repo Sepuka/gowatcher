@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"github.com/sepuka/gowatcher/definition/logger"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -48,7 +49,7 @@ func doPeriodicalTask(period time.Duration, resultHandler ResultHandler, f func(
 			result := f()
 			if result.IsFailure() {
 				// TODO send msg about err to channel
-				log := services.Container.Get(services.Logger).(*logrus.Logger)
+				log := services.Container.Get(logger.DefLogger).(*logrus.Logger)
 				log.WithFields(logrus.Fields{
 					"result": result.GetContent(),
 				}).Errorf("Watcher %v failed: %v.", result.GetName(), result.GetError().Error())

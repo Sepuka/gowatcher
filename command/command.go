@@ -72,7 +72,7 @@ func NewEnvedCmd(cmd, args string, env string) *Cmd {
 func runConsoleCommand(command *Cmd) Result {
 	result, err := execute(command)
 	if err != nil {
-		return NewResult(command.cmd, "command failed", err)
+		return NewResult(command.cmd, err.Error(), err)
 	}
 
 	return NewResult(command.cmd, result, nil)
@@ -83,9 +83,10 @@ func execute(command *Cmd) (string, error) {
 	cmd.Env = command.envs
 	var out bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &out
 	err := cmd.Run()
 	if err != nil {
-		return "", err
+		return out.String(), err
 	}
 
 	return out.String(), nil

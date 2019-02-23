@@ -37,6 +37,10 @@
     {
       "name": "LoadAvgGraph",
       "loop": 86400
+    },
+    {
+      "name": "Temp",
+      "loop": 21600
     }
   ],
   "redis": {

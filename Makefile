@@ -29,7 +29,7 @@ clean:
 get:
 	$(GOGET)
 
-run: get
+run: build
 	$(GORUN) ./*.go
 
 run_test: get
