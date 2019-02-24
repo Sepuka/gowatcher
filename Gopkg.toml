@@ -15,4 +15,4 @@
   version = "1.2.2"
 [[constraint]]
   name = "gonum.org/v1/plot"
-  branch = "master"
+  revision = "0582252c54f67a656af44d054ca37602364139eb"
