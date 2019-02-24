@@ -8,6 +8,10 @@ type RedisStore struct {
 	Client *redis.Client
 }
 
+func (redis *RedisStore) Close() error {
+	return redis.Client.Close()
+}
+
 func (redis RedisStore) Push(key string, value interface{}) error {
 	status := redis.Client.LPush(key, value)
 

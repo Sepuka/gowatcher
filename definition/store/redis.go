@@ -7,6 +7,7 @@ import (
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/services/store"
+	"io"
 )
 
 const DefStoreRedis = "definition.store.redis"
@@ -27,6 +28,9 @@ func init() {
 				})
 
 				return &store.RedisStore{Client: redisClient}, nil
+			},
+			Close: func(obj interface{}) error {
+				return obj.(io.Closer).Close()
 			},
 		})
 	})
