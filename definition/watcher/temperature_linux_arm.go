@@ -22,8 +22,8 @@ func init() {
 			transportChan chan<- command.Result
 		)
 
-		if err := params.Fill(tempAgentName, &cfg); err != nil {
-			return nil, err
+		if err := params.Fill(measureTempArg, &cfg); err != nil {
+			return err
 		}
 
 		if cfg.IsActive == false {
