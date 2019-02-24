@@ -9,10 +9,9 @@ import (
 type WWatcher struct {
 	Command       *command.Cmd
 	Loop          time.Duration
-	TransportChan chan<- command.Result
+	Handler command.ResultHandler
 }
 
 func (obj *WWatcher) Exec() {
-	handler := command.NewDfFormatResultHandler(obj.TransportChan)
-	command.RunCmdLoop(obj.Command, obj.Loop, handler)
+	command.RunCmdLoop(obj.Command, obj.Loop, obj.Handler)
 }

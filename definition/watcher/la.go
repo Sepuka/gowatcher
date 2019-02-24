@@ -18,21 +18,26 @@ const (
 
 func init() {
 	services.Register(func(builder *di.Builder, params config.Configuration) error {
+		var (
+			cfg           config.WatcherConfig
+			transportChan chan<- command.Result
+			redis         stats.SliceStoreReader
+		)
+
+		if err := params.Fill(laAgentName, &cfg); err != nil {
+			return err
+		}
+
+		if cfg.IsActive == false {
+			return nil
+		}
+
 		return builder.Add(di.Def{
 			Name: DefLoadAverage,
 			Tags: []di.Tag{{
 				Name: DefWatcherTag,
 			}},
 			Build: func(ctn di.Container) (interface{}, error) {
-				var (
-					cfg           config.WatcherConfig
-					transportChan chan<- command.Result
-					redis         stats.SliceStoreReader
-				)
-
-				if err := params.Fill(laAgentName, &cfg); err != nil {
-					return nil, err
-				}
 
 				if err := services.Container.Fill(transport.DefTransportChan, &transportChan); err != nil {
 					return nil, err

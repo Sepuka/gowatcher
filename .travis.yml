@@ -1,5 +1,6 @@
 language: go
 go:
+  - 1.11
   - master
 install:
   - go get -u github.com/golang/dep/cmd/dep

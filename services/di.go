@@ -5,10 +5,6 @@ import (
 	"github.com/sepuka/gowatcher/config"
 )
 
-const (
-	Logger        = "logger"
-)
-
 var (
 	Container  di.Container
 	components []creatorFn

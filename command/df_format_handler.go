@@ -9,15 +9,15 @@ import (
 
 const outputFormat = "^(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*?)$"
 
-type DfFormatResultHandler struct {
+type dfFormatResultHandler struct {
 	c chan<-Result
 }
 
 func NewDfFormatResultHandler(transportChan chan<-Result) ResultHandler {
-	return DfFormatResultHandler{transportChan}
+	return dfFormatResultHandler{transportChan}
 }
 
-func (handler DfFormatResultHandler) Handle(raw Result) {
+func (handler dfFormatResultHandler) Handle(raw Result) {
 	handler.c <- NewResult(raw.GetName(), parse(raw.GetContent()), raw.GetError())
 }
 
