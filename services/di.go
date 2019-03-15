@@ -37,11 +37,11 @@ func GetByTag(tag string) []interface{} {
 	for _, def := range Container.Definitions() {
 		for _, defTag := range def.Tags {
 			if defTag.Name == tag {
-				var fff interface{}
-				if err := Container.Fill(def.Name, &fff); err != nil {
+				var content interface{}
+				if err := Container.Fill(def.Name, &content); err != nil {
 					panic(err)
 				}
-				defs = append(defs, fff)
+				defs = append(defs, content)
 			}
 		}
 	}

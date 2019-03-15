@@ -1,7 +1,6 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GORUN=$(GOCMD) run
-GOGET=$(GOCMD) get
 GOFMT=gofmt
 BUILD=`git rev-parse HEAD`
 TIMEBUILD=`date -u '+%Y-%m-%d_%I:%M:%S%p'`
@@ -25,9 +24,6 @@ build_rpi: clean
 
 clean:
 	rm -f $(OUT_FILE)
-
-get:
-	$(GOGET)
 
 run: build
 	$(GORUN) ./*.go

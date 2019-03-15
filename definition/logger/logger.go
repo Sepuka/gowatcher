@@ -1,45 +1,42 @@
 package logger
 
 import (
-	"errors"
 	"github.com/sarulabs/di"
 	"github.com/sepuka/gowatcher/config"
 	"github.com/sepuka/gowatcher/services"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"os"
 )
 
 const (
-	logMode   = os.FileMode(0644)
-	logFlags  = os.O_WRONLY | os.O_CREATE
 	DefLogger = "definition.logger"
 )
 
-func init() {
-	services.Register(func(builder *di.Builder, cfg config.Configuration) error {
-		LogLevel, err := logrus.ParseLevel(cfg.Logger.Level)
-		if err != nil {
-			return errors.New("cannot parse logger level")
-		}
+type Logger = *zap.Logger
 
-		fileLog, err := os.OpenFile(cfg.Logger.File, logFlags, logMode)
-		if err != nil {
-			return errors.New("cannot open or create log file")
+func init() {
+	services.Register(func(builder *di.Builder, cfg config.Configuration) (err error) {
+		var logger Logger
+		if cfg.Logger.IsProduction {
+			logger, err = zap.NewProduction()
+			if err != nil {
+				return err
+			}
+		} else {
+			logger, err = zap.NewDevelopment()
+			if err != nil {
+				return err
+			}
 		}
+		defer logger.Sync()
+
+		host, _ := os.Hostname()
+		logger.With(zap.String("host", host))
 
 		return builder.Add(di.Def{
 			Name: DefLogger,
 			Build: func(ctn di.Container) (interface{}, error) {
-				log := &logrus.Logger{
-					Formatter:    new(logrus.JSONFormatter),
-					Hooks:        make(logrus.LevelHooks),
-					Level:        LogLevel,
-					ExitFunc:     os.Exit,
-					ReportCaller: cfg.Logger.WithCaller,
-				}
-				log.SetOutput(fileLog)
-
-				return log, nil
+				return logger, nil
 			},
 		})
 	})

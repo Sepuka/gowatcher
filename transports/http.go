@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/sirupsen/logrus"
+	"github.com/sepuka/gowatcher/definition/logger"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -12,7 +13,7 @@ import (
 
 type loggedRequestSender struct {
 	httpClient *http.Client
-	log        *logrus.Logger
+	log        logger.Logger
 	answer     interface{}
 }
 
@@ -26,7 +27,13 @@ func (obj loggedRequestSender) sendRequest(req *http.Request) error {
 
 	response, err = obj.httpClient.Do(req)
 	if err != nil {
-		obj.log.Errorf("Request %v failed with error %v", formatRequest(*req), err)
+		obj.
+			log.
+			With(
+				zap.String("req", formatRequest(*req)),
+				zap.Error(err),
+			).
+			Error("Request failed")
 
 		return err
 	}
@@ -34,17 +41,21 @@ func (obj loggedRequestSender) sendRequest(req *http.Request) error {
 	req.Body = ioutil.NopCloser(bytes.NewBuffer(requestBodyBuffer))
 	err = parseResponse(*response, obj.answer)
 	if err != nil {
-		obj.log.Errorf("Cannot parse body")
+		obj.log.Error("Cannot parse body")
 
 		return err
 	}
 
-	obj.log.WithFields(logrus.Fields{
-		"request":  formatRequest(*req),
-		"response": formatResponse(*response),
-		"answer":   obj.answer,
-		"status":   response.Status,
-	}).Debugf("Request to %v", req.Host)
+	obj.
+		log.
+		With(
+			zap.String("request",  formatRequest(*req)),
+			zap.String("response", formatResponse(*response)),
+			zap.Any("answer",   obj.answer),
+			zap.String("status",   response.Status),
+			zap.String("host", req.Host),
+		).
+		Debug("Outcoming request")
 
 	defer response.Body.Close()
 

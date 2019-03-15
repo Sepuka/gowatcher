@@ -10,7 +10,7 @@ import (
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/watchers"
 	"github.com/sevlyar/go-daemon"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"os"
 	"syscall"
 	"time"
@@ -26,7 +26,7 @@ var (
 	stop          = make(chan struct{})
 	done          = make(chan struct{})
 	watcherResult chan command.Result
-	log           logrus.FieldLogger
+	log           *zap.Logger
 	signal        = flag.String("s", "", "send signal to the daemon\nstop - to stop daemon")
 	daemonize     = flag.Bool("d", false, "Daemonize gowatcher")
 	testMode      = flag.Bool("t", false, "Test mode")
@@ -68,7 +68,7 @@ func main() {
 	if isDaemonFlagsPresent() {
 		d, err := cntxt.Search()
 		if err != nil {
-			log.Fatalf("Unable send signal to the daemon: %v", err)
+			log.Fatal("Unable send signal to the daemon", zap.Any("err", err))
 		}
 		daemon.SendCommands(d)
 
@@ -84,7 +84,7 @@ func main() {
 
 	child, err := cntxt.Reborn()
 	if err != nil {
-		log.Fatalf("Unable to run: ", err)
+		log.Fatal("Unable to reborn", zap.Any("err", err))
 	}
 	if child != nil {
 		return
@@ -100,7 +100,7 @@ func main() {
 
 	err = daemon.ServeSignals()
 	if err != nil {
-		log.Debugf("Error: %v", err)
+		log.Debug("Error of signal serving", zap.Any("err", err))
 	}
 	log.Info("daemon terminated.")
 }

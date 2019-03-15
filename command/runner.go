@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/definition/logger"
 	"github.com/sepuka/gowatcher/services"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"time"
 )
@@ -43,16 +43,18 @@ func RunCmdLoop(cmd *Cmd, period time.Duration, resultHandler ResultHandler) {
 }
 
 func doPeriodicalTask(period time.Duration, resultHandler ResultHandler, f func() Result) {
-	var log *logrus.Logger
+	var log *zap.Logger
 	for {
 		select {
 		case <-time.After(period):
 			result := f()
 			if result.IsFailure() {
-				log = services.Container.Get(logger.DefLogger).(*logrus.Logger)
-				log.WithFields(logrus.Fields{
-					"result": result.GetContent(),
-				}).Errorf("Watcher %v failed: %v.", result.GetName(), result.GetError().Error())
+				log = services.Container.Get(logger.DefLogger).(*zap.Logger)
+				log.With(
+					zap.String("watcher", result.GetName()),
+					zap.String("content", result.GetContent()),
+					zap.Error(result.GetError()),
+				).Error("watcher failed")
 				break
 			}
 			resultHandler.Handle(result)

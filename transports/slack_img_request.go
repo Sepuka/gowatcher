@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
+	"go.uber.org/zap"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -40,7 +41,10 @@ func (obj slack) sendImg(msg command.Result) (err error) {
 	request, err := buildImgRequest(msg, obj.cfg.FileUploadUrl, obj.cfg.Token)
 
 	if err != nil {
-		obj.logger.Errorf("Build slack request failed: %v", err)
+		obj.
+			logger.
+			With(zap.Error(err)).
+			Error("Build slack request failed")
 
 		return err
 	}
@@ -58,9 +62,15 @@ func (obj slack) sendImg(msg command.Result) (err error) {
 
 	answer := sender.answer.(*filesUploadAPIResponse)
 	if answer.Ok {
-		obj.logger.Infof("Img %v uploaded to slack", answer.File)
+		obj.
+			logger.
+			With(zap.Any("file", answer.File)).
+			Info("Img was uploaded to slack")
 	} else {
-		obj.logger.Errorf("Img not uploaded to slack with error '%v'", answer.Error)
+		obj.
+			logger.
+			With(zap.Any("err", answer.Error)).
+			Error("Img not uploaded to slack with error")
 	}
 
 	return err

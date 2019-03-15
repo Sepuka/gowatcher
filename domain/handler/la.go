@@ -3,9 +3,9 @@ package handler
 import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
+	"github.com/sepuka/gowatcher/definition/logger"
 	"github.com/sepuka/gowatcher/parsers"
 	"github.com/sepuka/gowatcher/stats"
-	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -31,10 +31,10 @@ type loadAverageSnapshot struct {
 type laResultHandler struct {
 	c      chan<-command.Result
 	store  stats.SliceStoreWriter
-	logger logrus.FieldLogger
+	logger logger.Logger
 }
 
-func NewLaResultHandler(transportChan chan<-command.Result, redis stats.SliceStoreWriter, logger *logrus.Logger) command.ResultHandler {
+func NewLaResultHandler(transportChan chan<-command.Result, redis stats.SliceStoreWriter, logger logger.Logger) command.ResultHandler {
 	return &laResultHandler{
 		c: transportChan,
 		store: redis,

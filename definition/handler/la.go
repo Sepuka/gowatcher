@@ -10,7 +10,6 @@ import (
 	"github.com/sepuka/gowatcher/domain/handler"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/stats"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -25,7 +24,7 @@ func init() {
 				var (
 					transportChan chan<- command.Result
 					redis stats.SliceStoreWriter
-					log *logrus.Logger
+					log logger.Logger
 				)
 
 				if err := services.Container.Fill(transport.DefTransportChan, &transportChan); err != nil {

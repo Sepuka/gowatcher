@@ -3,7 +3,8 @@ package transports
 import (
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
-	"github.com/sirupsen/logrus"
+	"github.com/sepuka/gowatcher/definition/logger"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -12,13 +13,11 @@ const transportSlackName = "slack"
 type slack struct {
 	httpClient *http.Client
 	cfg        *config.SlackConfig
-	logger     *logrus.Logger
+	logger     logger.Logger
 }
 
-func NewSlack(http *http.Client, cfg *config.SlackConfig, logger *logrus.Logger) Transport {
-	logger.WithFields(logrus.Fields{
-		"transport": transportSlackName,
-	})
+func NewSlack(http *http.Client, cfg *config.SlackConfig, logger logger.Logger) Transport {
+	logger.With(zap.String("transport", transportSlackName))
 
 	return &slack{
 		httpClient: http,
@@ -28,11 +27,12 @@ func NewSlack(http *http.Client, cfg *config.SlackConfig, logger *logrus.Logger)
 }
 
 func (obj slack) Send(msg command.Result) (err error) {
-	obj.logger.WithFields(
-		logrus.Fields{
-			"msg_type": msg.GetType(),
-		},
-	).Debugf("Sending '%v' message.", msg.GetName())
+	obj.
+		logger.
+		With(
+		zap.String("msg_type", string(msg.GetType())),
+		zap.String("msg", msg.GetName()),
+	).Debug("Sending message.")
 
 	switch msg.GetType() {
 	case command.ImageContent:

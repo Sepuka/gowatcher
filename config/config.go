@@ -16,6 +16,7 @@ type Logger struct {
 	Level      string `id:"level" default:"info"`
 	WithCaller bool   `id:"withCaller" default:"false"`
 	File       string `id:"file" default:"log"`
+	IsProduction bool `id:"is_prod" default:"true"`
 }
 
 type KeyValue struct {

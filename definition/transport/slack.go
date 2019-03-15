@@ -8,7 +8,6 @@ import (
 	"github.com/sepuka/gowatcher/definition/logger"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/transports"
-	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -23,7 +22,7 @@ func init() {
 			}},
 			Build: func(ctn di.Container) (interface{}, error) {
 				var (
-					log        *logrus.Logger
+					log        logger.Logger
 					httpClient *http.Client
 					cfg        *config.SlackConfig
 				)

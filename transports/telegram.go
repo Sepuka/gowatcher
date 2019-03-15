@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/sepuka/gowatcher/command"
 	"github.com/sepuka/gowatcher/config"
+	"github.com/sepuka/gowatcher/definition/logger"
 	"github.com/sepuka/gowatcher/pack"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"strconv"
@@ -19,13 +20,11 @@ const (
 type Telegram struct {
 	httpClient *http.Client
 	cfg        *config.TelegramConfig
-	logger     logrus.FieldLogger
+	logger     logger.Logger
 }
 
-func NewTelegram(http *http.Client, cfg *config.TelegramConfig, logger *logrus.Logger) Transport {
-	logger.WithFields(logrus.Fields{
-		"transport": transportTelegramName,
-	})
+func NewTelegram(http *http.Client, cfg *config.TelegramConfig, logger logger.Logger) Transport {
+	logger.With(zap.String("transport", transportTelegramName))
 
 	return &Telegram{
 		httpClient: http,
@@ -35,11 +34,13 @@ func NewTelegram(http *http.Client, cfg *config.TelegramConfig, logger *logrus.L
 }
 
 func (obj Telegram) Send(msg command.Result) (err error) {
-	obj.logger.WithFields(
-		logrus.Fields{
-			"msg_type": msg.GetType(),
-		},
-	).Debugf("Sending '%v' message.", msg.GetName())
+	obj.
+		logger.
+		With(
+			zap.String("msg_type", string(msg.GetType())),
+			zap.String("msg", msg.GetName()),
+		).
+		Debug("Sending message.")
 
 	url := fmt.Sprintf(telegramPathTemplate, obj.cfg.Api, obj.cfg.BotId, obj.cfg.Token)
 	body := obj.buildRequest(msg)

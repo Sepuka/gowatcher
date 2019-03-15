@@ -8,7 +8,6 @@ import (
 	logger2 "github.com/sepuka/gowatcher/definition/logger"
 	"github.com/sepuka/gowatcher/services"
 	"github.com/sepuka/gowatcher/transports"
-	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -18,7 +17,7 @@ func init() {
 	services.Register(func(builder *di.Builder, params config.Configuration) error {
 		var (
 			cfg        *config.TelegramConfig
-			logger     *logrus.Logger
+			logger     logger2.Logger
 			httpClient *http.Client
 		)
 
