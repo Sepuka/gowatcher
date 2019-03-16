@@ -16,20 +16,23 @@ type Logger = *zap.Logger
 
 func init() {
 	services.Register(func(builder *di.Builder, cfg config.Configuration) (err error) {
-		var logger Logger
-		if cfg.Logger.IsProduction {
-			logger, err = zap.NewProduction()
-			if err != nil {
-				return err
-			}
-		} else {
-			logger, err = zap.NewDevelopment()
-			if err != nil {
-				return err
-			}
-		}
-		defer logger.Sync()
+		var (
+			logger Logger
+			zapCfg zap.Config
+		)
 
+		if cfg.Logger.IsProduction {
+			zapCfg = zap.NewProductionConfig()
+		} else {
+			zapCfg = zap.NewDevelopmentConfig()
+
+		}
+
+		zapCfg.OutputPaths = append(zapCfg.OutputPaths, cfg.Logger.File)
+		logger, err = zapCfg.Build()
+		if err != nil {
+			return err
+		}
 		host, _ := os.Hostname()
 		logger.With(zap.String("host", host))
 
@@ -37,6 +40,9 @@ func init() {
 			Name: DefLogger,
 			Build: func(ctn di.Container) (interface{}, error) {
 				return logger, nil
+			},
+			Close: func(obj interface{}) error {
+				return obj.(Logger).Sync()
 			},
 		})
 	})

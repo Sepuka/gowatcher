@@ -57,7 +57,7 @@
   },
   "log": {
        "level": "trace|debug|info|warning|error|fatal|panic",
-       "withCaller": false,
-       "file": "log"
+       "file": "log",
+       "is_prod": false,
      }
 }
